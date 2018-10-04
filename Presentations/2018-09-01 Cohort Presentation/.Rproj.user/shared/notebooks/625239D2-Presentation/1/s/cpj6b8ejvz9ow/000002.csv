@@ -1,0 +1,6 @@
+"0","concentration.data %>% "
+"0","  ggplot(aes(t,c))+"
+"0","  geom_line(data = true_solution, aes(t,ys), alpha = 0.75, color = '#4F2683', size = 2)+"
+"0","  geom_point(size = 4)+"
+"0","  theme(aspect.ratio = 1/2)+"
+"0","  labs(x = 'Time', y = 'Concentration')"

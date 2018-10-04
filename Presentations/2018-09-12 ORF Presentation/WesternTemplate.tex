@@ -1,0 +1,260 @@
+% Western Themed Beamer
+
+\documentclass[$if(fontsize)$$fontsize$,$endif$$if(handout)$handout,$endif$$if(beamer)$ignorenonframetext,$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
+$if(theme)$
+\usetheme{$theme$}
+$endif$
+$if(colortheme)$
+\usecolortheme{$colortheme$}
+$endif$
+$if(fonttheme)$
+\usefonttheme{$fonttheme$}
+$endif$
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{:}
+\setbeamercolor{caption name}{fg=normal text.fg}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\usepackage{lmodern}
+\ifxetex
+\usepackage{fontspec,xltxtra,xunicode}
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\newcommand{\euro}{€}
+\else
+\ifluatex
+\usepackage{fontspec}
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\newcommand{\euro}{€}
+\else
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+$if(euro)$
+\usepackage{eurosym}
+$endif$
+\fi
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+$if(natbib)$
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+$endif$
+$if(biblatex)$
+\usepackage{biblatex}
+$for(bibliography)$
+\addbibresource{$bibliography$}
+$endfor$
+$endif$
+$if(listings)$
+\usepackage{listings}
+$endif$
+$if(lhs)$
+\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+$endif$
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+$endif$
+$if(tables)$
+\usepackage{longtable,booktabs}
+\usepackage{caption}
+% These lines are needed to make table captions work with longtable:
+\makeatletter
+\def\fnum@table{\tablename~\thetable}
+\makeatother
+$endif$
+$if(url)$
+\usepackage{url}
+$endif$
+$if(graphics)$
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight0.8\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+$endif$
+
+$if(strikeout)$
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+$if(numbersections)$
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+$if(verbatim-in-note)$
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+$if(lang)$
+\ifxetex
+\usepackage{polyglossia}
+\setmainlanguage{$mainlang$}
+\setotherlanguages{$for(otherlang)$$otherlang$$sep$,$endfor$}
+\else
+\usepackage[shorthands=off,$lang$]{babel}
+\fi
+$endif$
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+%%Color Themes
+\usepackage{xcolor}
+\definecolor{helmuth}{RGB}{79, 38, 131/250} % 
+\definecolor{westernSilver}{RGB}{128,127,131} %
+
+\usetheme{Madrid}
+\useoutertheme{miniframes}\useinnertheme{circles}
+\setbeamertemplate{navigation symbols}{}
+%Set Beamer Colors
+\setbeamercolor{palette primary}{bg=helmuth,fg=white}
+\setbeamercolor{palette secondary}{bg=helmuth,fg=white}
+\setbeamercolor{palette tertiary}{bg=helmuth,fg=white}
+\setbeamercolor{palette quaternary}{bg=helmuth,fg=white}
+\setbeamercolor{structure}{fg=helmuth} % itemize, enumerate, etc
+\setbeamercolor{section in toc}{fg=helmuth} % TOC sections
+\setbeamercolor*{titlelike}{fg=white,bg=helmuth}
+\setbeamercolor{subsection in head/foot}{bg=westernSilver,fg=white}
+\setbeamercolor{itemize item}{fg=black}
+\setbeamercolor{enumerate item}{fg=black}
+
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{enumerate items}[default]
+
+
+
+%% Beamer Behaviour
+\AtBeginPart{}
+\AtBeginSection{}
+\AtBeginSubsection{}
+\AtBeginSubsubsection{}
+\setlength{\emergencystretch}{0em}
+\setlength{\parskip}{0pt}
+
+
+
+%% Front matter conditionals.
+$if(title)$
+\title[$short-title$]{$title$}
+$endif$
+$if(subtitle)$
+\subtitle{$subtitle$}
+$endif$
+$if(author)$
+\author[
+$if(short-author)$
+$for(short-author)$$short-author$$sep$ \and $endfor$
+$else$
+$for(author)$$author$$sep$ \and $endfor$
+$endif$
+]{$for(author)$$author$$sep$ \and $endfor$}
+$endif$
+$if(institute)$
+\institute[
+$if(short-institute)$
+$for(short-institute)$$short-institute$$sep$ \and $endfor$
+$endif$
+]{
+	$if(title-logo)$
+	\includegraphics[width=15mm,keepaspectratio]{$title-logo$}\\
+	\vspace{2 mm}
+	$endif$
+	$if(department)$
+	$for(department)$$department$$sep$ \and $endfor$ \\
+	$endif$
+	$for(institute)$$institute$$sep$ \and $endfor$
+	$if(email)$
+	\\ $for(email)$ \href{mailto:$email$}{\nolinkurl{$email$}}$sep$ \and $endfor$
+	$endif$
+}
+$endif$
+
+
+\logo{
+		$if(logo-left)$
+		\includegraphics[width=7.5mm,keepaspectratio]{$logo-left$}
+		\hspace{\dimexpr\paperwidth-2cm-5pt}
+		$endif$
+		$if(logo-right)$
+		\includegraphics[width=7.5mm,keepaspectratio]{$logo-right$}
+		$endif$
+}
+
+
+\date[
+$if(short-date)$
+$short-date$
+$else$
+$date$
+$endif$]{
+	$if(date)$
+	$date$
+	$if(license)$
+	\\ \vspace{5mm}
+	$endif$
+	$endif$
+	$if(license)$
+	{\scriptsize $license$}
+	$endif$
+}
+
+
+\begin{document}
+
+$if(title)$
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+$endif$
+
+$for(include-before)$
+$include-before$
+
+$endfor$
+$if(toc)$
+\begin{frame}
+	\tableofcontents[hideallsubsections]
+\end{frame}
+
+$endif$
+$body$
+
+$if(natbib)$
+$if(biblio-files)$
+$if(biblio-title)$
+$if(book-class)$
+\renewcommand\bibname{$biblio-title$}
+$else$
+\renewcommand\refname{$biblio-title$}
+$endif$
+$endif$
+\bibliography{$biblio-files$}
+
+$endif$
+$endif$
+$if(biblatex)$
+\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+
+$endif$
+$for(include-after)$
+$include-after$
+
+$endfor$
+
+
+\end{document}

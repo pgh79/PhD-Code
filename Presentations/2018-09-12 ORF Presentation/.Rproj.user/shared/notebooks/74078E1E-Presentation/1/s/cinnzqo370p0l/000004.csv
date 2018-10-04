@@ -1,0 +1,4 @@
+"0","elimination.plot+"
+"0","  geom_point(data = concentration.data, aes(t,c), size = 5, shape = 21,fill = 'black', color = 'white')+"
+"0","  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))+"
+"0","  labs(x = 'Time', y = 'Concentration')"

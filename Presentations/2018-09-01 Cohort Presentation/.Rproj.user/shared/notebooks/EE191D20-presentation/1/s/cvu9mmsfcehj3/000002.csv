@@ -1,0 +1,28 @@
+"0","library(tidyverse)"
+"0","library(rstan)"
+"2","Loading required package: StanHeaders
+"
+"2","rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+"
+"2","For execution on a local, multicore CPU with excess RAM we recommend calling
+options(mc.cores = parallel::detectCores()).
+To avoid recompilation of unchanged Stan programs, we recommend calling
+rstan_options(auto_write = TRUE)
+"
+"2","
+Attaching package: ‘rstan’
+
+"
+"2","The following object is masked from ‘package:magrittr’:
+
+    extract
+
+"
+"2","The following object is masked from ‘package:tidyr’:
+
+    extract
+
+"
+"0","library(broom)"
+"0","rstan_options(auto_write = TRUE)"
+"0","options(mc.cores = parallel::detectCores())"

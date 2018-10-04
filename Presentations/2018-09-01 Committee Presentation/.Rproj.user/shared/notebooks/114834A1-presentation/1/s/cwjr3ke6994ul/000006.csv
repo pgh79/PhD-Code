@@ -1,0 +1,95 @@
+"0","input_data <- read_rdump(""one_comp_lin_elim_abs.data.R"")"
+"0",""
+"0","fit <- stan(file='one_comp_lin_elim_abs_ode.stan', data=input_data,"
+"0","            iter=2000, chains=2, seed=4938483)"
+"1","starting worker pid=22271 on localhost:11793 at 00:04:06.972
+"
+"1","starting worker pid=22281 on localhost:11793 at 00:04:07.180
+"
+"1","
+SAMPLING FOR MODEL 'one_comp_lin_elim_abs_ode' NOW (CHAIN 1).
+"
+"1","Rejecting initial value:
+  Error evaluating the log probability at the initial value.
+Exception: lognormal_lpdf: Location parameter is nan, but must be finite!  (in 'model249a3cf5e023_one_comp_lin_elim_abs_ode' at line 65)
+
+"
+"1","
+Gradient evaluation took 0.000978 seconds
+1000 transitions using 10 leapfrog steps per transition would take 9.78 seconds.
+Adjust your expectations accordingly!
+
+
+"
+"1","Iteration:    1 / 2000 [  0%]  (Warmup)
+"
+"1","
+SAMPLING FOR MODEL 'one_comp_lin_elim_abs_ode' NOW (CHAIN 2).
+"
+"1","
+Gradient evaluation took 0.001363 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.63 seconds.
+Adjust your expectations accordingly!
+
+
+"
+"1","Iteration:    1 / 2000 [  0%]  (Warmup)
+"
+"1","Iteration:  200 / 2000 [ 10%]  (Warmup)
+"
+"1","Iteration:  200 / 2000 [ 10%]  (Warmup)
+"
+"1","Iteration:  400 / 2000 [ 20%]  (Warmup)
+"
+"1","Iteration:  400 / 2000 [ 20%]  (Warmup)
+"
+"1","Iteration:  600 / 2000 [ 30%]  (Warmup)
+"
+"1","Iteration:  600 / 2000 [ 30%]  (Warmup)
+"
+"1","Iteration:  800 / 2000 [ 40%]  (Warmup)
+"
+"1","Iteration:  800 / 2000 [ 40%]  (Warmup)
+"
+"1","Iteration: 1000 / 2000 [ 50%]  (Warmup)
+"
+"1","Iteration: 1001 / 2000 [ 50%]  (Sampling)
+"
+"1","Iteration: 1000 / 2000 [ 50%]  (Warmup)
+"
+"1","Iteration: 1001 / 2000 [ 50%]  (Sampling)
+"
+"1","Iteration: 1200 / 2000 [ 60%]  (Sampling)
+"
+"1","Iteration: 1200 / 2000 [ 60%]  (Sampling)
+"
+"1","Iteration: 1400 / 2000 [ 70%]  (Sampling)
+"
+"1","Iteration: 1400 / 2000 [ 70%]  (Sampling)
+"
+"1","Iteration: 1600 / 2000 [ 80%]  (Sampling)
+"
+"1","Iteration: 1600 / 2000 [ 80%]  (Sampling)
+"
+"1","Iteration: 1800 / 2000 [ 90%]  (Sampling)
+"
+"1","Iteration: 1800 / 2000 [ 90%]  (Sampling)
+"
+"1","Iteration: 2000 / 2000 [100%]  (Sampling)
+"
+"1","
+ Elapsed Time: 13.1054 seconds (Warm-up)
+               11.7044 seconds (Sampling)
+"
+"1","               24.8098 seconds (Total)
+
+"
+"1","Iteration: 2000 / 2000 [100%]  (Sampling)
+"
+"1","
+ Elapsed Time: 13.5173 seconds (Warm-up)
+               12.8452 seconds (Sampling)
+"
+"1","               26.3625 seconds (Total)
+
+"

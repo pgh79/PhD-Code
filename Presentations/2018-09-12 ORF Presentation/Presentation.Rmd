@@ -1,0 +1,290 @@
+---
+title: Hey Kids, Wanna Model Some Drugs?
+subtitle: Bayesian Pharmacokinetic Models
+short-title: Drug Models
+author: Dan Lizotte \& Demetri Pananos
+short-author: D.L \& D.P
+date: "`r Sys.Date()`"
+fontsize: 10pt
+title-logo: ../western.png
+logo-right: ../western.png
+department: Department of Epidemiology \& Biostatistics \newline 
+            Schulich School of Medicine \& Dentistry
+institute: Western University
+output:
+  beamer_presentation:
+    incremental: false
+    df_print: kable
+    keep_tex: false
+    toc: false
+    slide_level: 2
+    template: WesternTemplate.tex
+header-includes:
+   - \usepackage{bm}
+bibliography: bib.bib
+---
+
+```{r, echo = F}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      results = 'show',
+                      out.width = '85%',
+                      fig.align = 'center',
+                      size = 'tiny',
+                      cache = FALSE
+                      )
+```
+
+
+
+## Work Done To Date
+
+- Some modelling has been done for Apixiban in conjunction with Markus.
+- Inputs Variables: Clinical, Demographic, Genetic, Temporal, etc.
+- Outputs: Plasma concentration.
+- Black box machine learning does not improve much over linear regression.
+- Unexplained variance not so bad if it is from between subject variability.
+
+## Proposed Direction
+
+- Use Bayesian statistics
+- Incorporate prior information
+- Estimate between subject variability using Heirarchical model
+  
+## The "B"-Word 
+
+
+a. Bayesian methods are good for prediction.
+b. Tons of prior information.  This *should be incorporated*.
+c. Small sample sizes are not a problem.
+d. Can account for between subject variability.
+
+## The "B"-Word
+
+- Start with *prior information* about the parameters of the model $p(\theta)$.
+  - This could be a population distribution of some PK parameter.
+- Determine how we think the data are generated $p(y\vert \theta)$.
+- New observations give a posterior $p(\theta \vert y) \propto p(\theta)\cdot p(y\vert \theta)$
+- In a Bayesian framework, probability is best interpreted as the strength of our belief.
+
+
+## A Small Example
+
+We think that each person has their own curve.  The curve is determined by the absorption/elimination rates.
+
+```{r,results='hide'}
+library(tidyverse)
+library(rstan)
+library(broom)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+
+theme_set(theme_minimal())
+
+sim <- stan(file='~/Google Drive/PhD/Code/all_updated_exercises/1 - one_comp_lin_elim_abs/sim_one_comp_lin_elim_abs.stan', iter=1,chains=1, seed=194838, algorithm="Fixed_param")
+
+t0 = rstan::extract(sim)$t_init[1]
+C0 = array(rstan::extract(sim)$C_init[1,], dim = 1)
+D = rstan::extract(sim)$D[1]
+V = rstan::extract(sim)$V[1]
+times = rstan::extract(sim)$ts[1,]
+N_t = length(rstan::extract(sim)$ts[1,])
+C_hat = rstan::extract(sim)$C_hat[1,]
+
+y<- function(t,k,k_a){
+  y_0 = 1
+  D = 30.0
+  V = 2.0
+
+yhat <- (0.1e1 / (k - k_a) * D / V * k_a * exp(t * (k - k_a)) - 0.1e1 / (k - k_a) * k_a / V * D) * exp(-k * t)  
+
+return(yhat)
+}
+
+concentration.data = tibble(t= times, c = C_hat)
+true_solution = tibble(t = seq(0,10,0.01), ys = y(t, k = 0.5, k_a = 0.75))
+
+
+elimination.data = data.frame(Time = seq(0,10,0.01)) %>% 
+                    mutate(Y = y(Time,0.5,0.75))
+
+elimination.plot = elimination.data %>% 
+                    ggplot(aes(Time,Y))+
+                    geom_line(size = 2, alpha = 0.5)+
+                    theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))+
+                    labs(x = 'Time', y = 'Concentration')
+
+elimination.plot
+# concentration.data %>% 
+#   ggplot(aes(t,c))+
+#   geom_point(size = 4, pch = 21, fill = 'black', color = 'white')+
+#   theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))+
+#   labs(x = 'Time', y = 'Concentration')
+```
+
+## A Small Example
+
+...and that when we measure concentration in plasma there is some noise.
+
+```{r}
+elimination.plot+
+  geom_point(data = concentration.data, aes(t,c), size = 5, shape = 21,fill = 'black', color = 'white')+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))+
+  labs(x = 'Time', y = 'Concentration')
+```
+
+
+## Sample From The Prior
+We have some prior information. Each curve correpsonds to a unique pair of absorption and elimination rates.
+```{r}
+set.seed(0)
+y_random<- function(t){
+  y_0 = 1
+  D = 30.0
+  V = 1
+  k_a = abs(rcauchy(1))
+  k = abs(rcauchy(1))
+
+yhat <- (0.1e1 / (k - k_a) * D / V * k_a * exp(t * (k - k_a)) - 0.1e1 / (k - k_a) * k_a / V * D) * exp(-k * t)  
+
+return(yhat)
+}
+
+
+random.curves = tibble(curve = 1:50, 
+                       t = list(seq(0,10,0.01)),
+                       yr = purrr::map(t,y_random)
+)
+
+random.curves %>% 
+  unnest(t,yr) %>% 
+  ggplot(aes(t,yr, group = curve))+
+  geom_line(alpha = 0.5, color = '#4F2683', size = 1)+
+  geom_point(data= concentration.data %>% mutate(curve = 1), aes(t, c), size = 4, pch = 21, fill = 'black', color = 'white')+
+  labs(x = 'Time', y = 'Concentration')+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))
+```
+
+## A Small Example
+
+Once we observe data, we can then determine which curves have most probably generated the data
+
+
+
+```{r}
+# model.data = list(t0 = t0, C0 = C0, D = D, V = V, times = times, N_t = N_t, C_hat = C_hat)
+# fit <- rstan::sampling(drug.model, data =model.data)
+# saveRDS(fit,'model_fit.RDS')
+
+#Already fit the model and sampled posterior.
+fit<-readRDS('model_fit.RDS')
+```
+
+## Sample From Posterior
+500 curves drawn from the posterior
+```{r}
+params = rstan::extract(fit)
+k = params$k[1:500]
+k_a = params$k_a[1:500]
+
+posterior = tibble(t = seq(0,10,0.01),
+                   k = list(k),
+                   k_a = list(k_a)
+                   ) %>% 
+            unnest() %>% 
+            mutate(c = y(t,k,k_a))
+
+
+concentration.data %>% 
+  ggplot(aes(t,c))+
+  geom_line(data = posterior, aes(t,c, group = interaction(k,k_a)), color = '#4F2683', alpha = 0.05 )+
+  geom_point(size = 4, pch = 21, fill = 'black', color = 'white', )+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))+
+  labs(x = 'Time', y = 'Concentration')
+  
+```
+
+
+## "Confidence Interval"
+```{r}
+C = params$C %>% as.data.frame()
+colnames(C) = times
+C = C %>% 
+    gather(time,Concentration) %>% 
+    group_by(time) %>% 
+    nest() %>% 
+    ungroup() %>% 
+    mutate(q = map(data, ~quantile(.$Concentration, probs = c(0.05,0.5,0.95)))) %>% 
+    unnest(map(q, tidy)) %>% 
+    spread(names,x) %>% 
+    mutate(time = as.numeric(time))
+
+C %>% 
+  ggplot(aes(time,`50%`))+
+  geom_ribbon(aes(ymin = `5%`, ymax = `95%`),alpha = 0.5,fill = '#4F2683')+
+  geom_line(data = elimination.data, aes(Time,Y),size = 2, alpha = 0.5)+
+  geom_line(size = 1)+
+  #geom_point(data = concentration.data, aes(t, c), size = 4, color = 'white', fill = 'black', shape = 21)+
+  labs(x = 'Time',y = 'Concentration')+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))
+
+
+
+```
+
+## "Prediction Interval"
+```{r}
+C = params$C_ppc[,1:length(times)] %>% as.data.frame()
+names(C)<-times
+
+C = C %>% 
+    gather(time,Concentration) %>% 
+    group_by(time) %>% 
+    nest() %>% 
+    ungroup() %>% 
+    mutate(q = map(data, ~quantile(.$Concentration, probs = c(0.05,0.5,0.95)))) %>% 
+    unnest(map(q, tidy)) %>% 
+    spread(names,x) %>% 
+    mutate(time = as.numeric(time))
+
+C %>% 
+  ggplot(aes(time,`50%`))+
+  geom_ribbon(aes(ymin = `5%`, ymax = `95%`),alpha = 0.5,fill = '#4F2683')+
+  geom_line(data = elimination.data, aes(Time,Y),size = 2, alpha = 0.5)+
+  geom_line(size = 1)+
+  #geom_point(data = concentration.data, aes(t, c), size = 4, color = 'white', fill = 'black', shape = 21)+
+  labs(x = 'Time',y = 'Concentration')+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))
+
+
+
+```
+
+
+## Distributions
+
+```{r}
+true_params = data.frame(var = c('k','k[a]','sigma'), val = c(0.5, 0.75, 0.1))
+
+as.data.frame(fit) %>% 
+  select(k_a:sigma) %>% 
+  gather(var,val) %>% 
+  mutate(var = if_else(var=='k_a','k[a]',var)) %>% 
+  ggplot(aes(val))+
+  geom_histogram(fill = '#4F2683',color = 'black', bins = 20)+
+  geom_vline(data = true_params, aes(xintercept = val), color = 'gray', size = 2)+
+  facet_wrap(~var, scale = 'free', nrow = 2,labeller = label_parsed)+
+  theme_classic()+
+  theme(aspect.ratio = 1/2, strip.text.x = element_text(size = 22))+
+  labs(x = '', y= '')
+```
+
+## This Was A Toy Example
+
+Proposed next steps:
+
+- Identify exactly what it is we want to study or estimate.
+- Construct quality priors from our data using Emperical Bayesian techniques.
+- Construct heirarchical models so that for example, weight has an effect on drug clearance.
+

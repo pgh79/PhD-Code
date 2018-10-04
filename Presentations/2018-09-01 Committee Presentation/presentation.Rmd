@@ -1,0 +1,337 @@
+---
+title: Bayesian Pharmacokinetics/Pharmacodynamics for Personalized Medicine
+short-title: Bayesian PK/PD
+author: Demetri Pananos
+short-author: D. Pananos
+department: Department of Epidemiology \& Biostatistics \newline 
+            Schulich School of Medicine \& Dentistry
+institute: Western University
+title-logo: ../western.png
+logo-right: ../western.png
+logo-left: ../schulich.png
+date: "`r Sys.Date()`"
+fontsize: 10pt
+output:
+  beamer_presentation:
+    incremental: false
+    df_print: kable
+    keep_tex: false
+    toc: false
+    slide_level: 2
+    template: ~/Documents/Github/PhDemetri/Presentations/WesternTemplate.tex
+    latex_engine: xelatex
+header-includes:
+   - \usepackage{bm}
+bibliography: bib.bib
+---
+
+```{r, echo = F}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      results = 'show',
+                      out.width = '75%',
+                      fig.align = 'center',
+                      size = 'tiny',
+                      cache = FALSE
+                      )
+```
+
+
+## Thesis
+
+- Personalized Medicine
+- Dr. Kim's clinic has concentration/dose/covariate data.  
+- Wants predictions for new patients + understanding of which covariates are most important for prediction
+- Tried ML models previously
+- Did not account for repeated observation
+- Lots of unexplained variance
+  
+## Proposed Direction
+
+- Use PK/PD models and estimate parameters using HMC/hierarchical models
+
+## Why Bayesian 
+
+As argued in [@Wakefield1996],
+
+a. PK/PD models are non-linear in parameters.  Classical models rely on asymptotic arguments.  Tough to validate for this data.
+b. We eventually want to *predict* concentrations for new patients. Bayesian methods are good for this,
+c. We have prior information since hundreds of patients have come through the clinic.  This ~~can~~ should be leveraged.
+d. Hierarchical models allow for easy analysis of assumptions to modelling process.
+e. The between subject variability is very high.  Variance propagation is crucial.
+f. Want to estimate individual patient's parameters as well as population parameters (this is natural in Bayesian context)
+
+## Why Differential Equations
+
+- Natural, almost canonical, application to PK/PD
+- Depending on the ODE, closed form solutions can be obtained, making inference all the easier
+- Depending on the ODE, numerical integration may be required.  Well developed tools to do this effectively and accurately
+- Applied mathematicians don't usually care about inference for parameters
+  - New venues for publication, conference presentations, collaboration
+
+
+
+
+## A Thank You
+
+The following examples are based of lectures from Michael Betancourt, a `Stan` developer and prominent Bayesian.
+
+## An Example
+
+- `Stan` is an open source project for MCMC. 
+- Well developed, widely used, fast.
+- Accessible through numerous languages.
+
+
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(rstan)
+library(broom)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+```
+
+## Simulation of a PK Profile
+
+Start with a PK model.  Let $D$ be the size of the dose, let $V$ be the volume of the compartment, and let $k$ the elimination rate, and $k_a$ be the dosing rate.
+
+$$
+\dfrac{d\mu}{dt} =  k_a \dfrac{D}{V}  {\rm e}^{- k_a  t}  - k\mu
+$$
+
+## Simulation of a PK Profile
+
+Subject to $\mu(0) = 0$, solution is
+
+$$
+\mu \left( t \right) =\dfrac{Dk_a}{(k - k_a)V}\left( {\rm e}^{-k_at} - {\rm e}^{kt} \right)
+$$
+
+## Simulation of a PK Profile
+
+Assume that concentration at time $t$ is
+
+
+\begin{align*}
+\log(Y) &\sim \mathcal{N}(\mu(t),\sigma)
+\end{align*}
+
+## Simulation of a PK Profile
+
+```{r, echo = FALSE, results = 'hide'}
+sim <- stan(file='~/Google Drive/PhD/Code/all_updated_exercises/1 - one_comp_lin_elim_abs/sim_one_comp_lin_elim_abs.stan', iter=1,
+            chains=1, seed=194838, algorithm="Fixed_param")
+
+t0 = rstan::extract(sim)$t_init[1]
+C0 = array(rstan::extract(sim)$C_init[1,], dim = 1)
+D = rstan::extract(sim)$D[1]
+V = rstan::extract(sim)$V[1]
+times = rstan::extract(sim)$ts[1,]
+N_t = length(rstan::extract(sim)$ts[1,])
+C_hat = rstan::extract(sim)$C_hat[1,]
+
+stan_rdump(c("t0", "C0", "D", "V", "times", "N_t", "C_hat"), file="one_comp_lin_elim_abs.data.R")
+
+
+```
+
+
+```{r, echo = FALSE}
+theme_set(theme_classic(base_size = 24))
+update_geom_defaults("line", list(size = 1.5))
+update_geom_defaults("point", list(size = 3))
+
+y<- function(t){
+  y_0 = 1
+  D = 30.0
+  V = 2.0
+  k_a = 0.75
+  k = 0.5
+
+yhat <- (0.1e1 / (k - k_a) * D / V * k_a * exp(t * (k - k_a)) - 0.1e1 / (k - k_a) * k_a / V * D) * exp(-k * t)  
+
+return(yhat)
+}
+
+concentration.data = tibble(t= times, c = C_hat)
+true_solution = tibble(t = seq(0,10,0.01), ys = y(t))
+
+
+
+
+concentration.data %>% 
+  ggplot(aes(t,c))+
+  geom_line(data = true_solution, aes(t,ys), color = 'gray')+
+  geom_point()+
+  theme(aspect.ratio = 1/2)+
+  labs(x = 'Time', y = 'Concentration')
+```
+
+
+## Our Problem is Really...
+
+
+```{r, echo = FALSE}
+
+y_random<- function(t){
+  y_0 = 1
+  D = 30.0
+  V = rnorm(1,2.0, 0.5)
+  k_a = rnorm(1,0.75, 0.1)
+  k = rnorm(1,0.5, 0.1)
+
+yhat <- (0.1e1 / (k - k_a) * D / V * k_a * exp(t * (k - k_a)) - 0.1e1 / (k - k_a) * k_a / V * D) * exp(-k * t)  
+
+return(yhat)
+}
+
+
+random.curves = tibble(curve = 1:10, 
+                       t = list(seq(0,10,0.01)),
+                       yr = purrr::map(t,y_random)
+)
+
+random.curves %>% 
+  unnest(t,yr) %>% 
+  ggplot(aes(t,yr, group = curve))+
+  geom_line(color = 'gray')+
+  geom_point(data= concentration.data %>% mutate(curve = 1), aes(t, c))+
+  labs(x = 'Time', y = 'Concentration')
+```
+
+
+
+## Doing Bayesian Inference
+
+One possible model is
+\begin{align*}
+k_a &\sim {\rm Cauchy}(0,1) \\
+k &\sim {\rm Cauchy}(0,1) \\
+\sigma &\sim {\rm Cauchy}(0,1)\\
+\mu \vert t, k, k_a, D, V &= \left( {\frac { D  k_{{a}}{{\rm e}^
+{t \left( k - k_{{a}} \right) }}}{ \left( k- k_{{a}} \right) V}} - \dfrac{D k_a}{(k - k_a)V} \right) {{\rm e}^{-kt}}\\
+\log(Y) \vert \mu  &\sim \mathcal{N}(\mu,\sigma)
+\end{align*}
+
+## `Stan` Does the Rest
+
+Code the model in `Stan` (not shown here) and sample from the posterior.
+
+```{r, echo = TRUE, results = 'hide'}
+input_data <- read_rdump("one_comp_lin_elim_abs.data.R")
+
+fit <- stan(file='one_comp_lin_elim_abs_ode.stan', data=input_data,
+            iter=2000, chains=2, seed=4938483)
+```
+
+
+## Marginal Posterior Distributions
+```{r, echo = FALSE}
+params = rstan::extract(fit)
+
+
+c_light <- c("#DCBCBC")
+c_light_highlight <- c("#C79999")
+c_mid <- c("#B97C7C")
+c_mid_highlight <- c("#A25050")
+c_dark <- c("#8F2727")
+c_dark_highlight <- c("#7C0000")
+
+par(mfrow=c(2, 2))
+
+hist(params$k, main="", xlab="k 1/day", col=c_dark, border=c_dark_highlight)
+abline(v=0.5, col=c_light, lty=1, lwd=3)
+
+hist(params$k_a, main="", xlab="k_a 1/day", col=c_dark, border=c_dark_highlight)
+abline(v=0.75,col=c_light,lty=1, lwd=3)
+
+hist(params$sigma, main="", xlab="sigma (mg/L)", col=c_dark, border=c_dark_highlight)
+abline(v=0.1,col=c_light,lty=1, lwd=3)
+
+
+```
+
+## Credible Interval for $\mu(t)$
+
+```{r, echo = FALSE}
+C = params$C[,1:length(times),1] %>% as.data.frame()
+names(C)<-times
+
+C = C %>% 
+    gather(time,Concentration) %>% 
+    group_by(time) %>% 
+    nest() %>% 
+    ungroup() %>% 
+    mutate(q = map(data, ~quantile(.$Concentration, probs = c(0.05,0.5,0.95)))) %>% 
+    unnest(map(q, tidy)) %>% 
+    spread(names,x) %>% 
+    mutate(time = as.numeric(time))
+
+C %>% 
+  ggplot(aes(time,`50%`))+
+  geom_line()+
+  geom_ribbon(aes(ymin = `5%`, ymax = `95%`),alpha = 0.5)+
+  geom_point(data = concentration.data, aes(t, c))+
+  labs(x = 'Time',y = 'Concentration')
+
+
+```
+
+## Posterior Predictive Check
+
+```{r, echo = FALSE}
+
+C = params$C_ppc[,1:length(times)] %>% as.data.frame()
+names(C)<-times
+
+C = C %>% 
+    gather(time,Concentration) %>% 
+    group_by(time) %>% 
+    nest() %>% 
+    ungroup() %>% 
+    mutate(q = map(data, ~quantile(.$Concentration, probs = c(0.05,0.5,0.95)))) %>% 
+    unnest(map(q, tidy)) %>% 
+    spread(names,x) %>% 
+    mutate(time = as.numeric(time))
+
+C %>% 
+  ggplot(aes(time,`50%`))+
+  geom_line()+
+  geom_ribbon(aes(ymin = `5%`, ymax = `95%`),alpha = 0.5)+
+  geom_point(data = concentration.data, aes(t, c))+
+  labs(x = 'Time',y = 'Concentration')
+
+
+```
+
+## Extensions
+
+Extend by:
+
+- Include more compartments
+- More complicated dynamics
+- Non-uniformly sampled times
+- Heirarchy
+
+## What I Would Like To Do
+
+- Determine exactly the population we are studying
+- Determine the model for the dynamics
+- Heirarchical generalized linear model for effect of clinical variables on PK/PD variables
+- Determine how dosing influences concentration levels (therapy vs. poison)
+- Cross validate predictive performance
+- Hopefully show that Bayesian appraoch is better than any current practice 
+- Write an OSS library for Bayesian PK/PD (maybe)
+
+
+# Fin {-}
+##
+\centering
+
+Questions
+
+\tiny Ask me how I made this presentation in R
+
+## References

@@ -1,0 +1,2 @@
+"0",""
+"0","hist(params$sigma, main="""", xlab=""sigma (mg/L)"", col=c_dark, border=c_dark_highlight)"

@@ -1,0 +1,59 @@
+---
+title: Milestones, Deliverables, Plans for Year 3
+short-title: Milestones and Plans
+author: Dan Lizotte
+short-author: D.L
+date: "`r Sys.Date()`"
+fontsize: 10pt
+title-logo: ../western.png
+logo-right: ../western.png
+department: Department of Computer Science \newline 
+            Faculty of Science \newline
+            Department of Epidemiology \& Biostatistics \newline 
+            Schulich School of Medicine \& Dentistry
+institute: Western University
+output:
+  beamer_presentation:
+    incremental: false
+    df_print: kable
+    keep_tex: false
+    toc: false
+    slide_level: 2
+    template: WesternTemplate.tex
+header-includes:
+   - \usepackage{bm}
+bibliography: bib.bib
+---
+
+```{r, echo = F}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      results = 'show',
+                      out.width = '85%',
+                      fig.align = 'center',
+                      size = 'tiny',
+                      cache = FALSE
+                      )
+```
+
+## Milestones and Deliverables
+
+- Rhiannon Rose sucessfully defended her PhD Aug 2018
+    - Contribution to our knowledge of how to model plasma concentration in frequentist framework with nonlinear models, concommitant medications, potential new genetic factors (statins)
+    - Manuscripts in prep
+
+- Demetri completes courses, forms committee
+    - Paper with Markus in prep on FXaIs
+    
+- Demetri identified Bayesian framework and software for PK/PD modelling.
+    - Will allow "smooth" improvement of predictions as we acquire more data.
+
+## Plans for Year 3
+
+- Demetri and Markus submit paper on FXaIs
+- Development and explication of modelling framework and software 
+- Data acquisition and planning
+   1. What data can we use that we already have? (E.g. Cerner)
+   2. What additional data should we collect? (E.g. levels from existing patients)
+- Conference presentation

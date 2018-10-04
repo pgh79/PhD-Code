@@ -1,0 +1,338 @@
+---
+title: Hey Kids, Wanna Model Some Drugs?
+subtitle: A Light Primer on Bayesian Pharmacometrics
+short-title: Bayesian Models
+author: Demetri Pananos
+short-author: D. Pananos
+date: "`r Sys.Date()`"
+fontsize: 10pt
+output:
+  beamer_presentation:
+    incremental: false
+    df_print: kable
+    keep_tex: false
+    toc: false
+    slide_level: 2
+    template: ~/Documents/Github/PhDemetri/Presentations/WesternTemplate.tex
+header-includes:
+   - \usepackage{bm}
+---
+
+```{r, echo = F}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      results = 'show',
+                      out.width = '85%',
+                      fig.align = 'center',
+                      size = 'tiny',
+                      cache = FALSE
+                      )
+```
+
+# About Me
+
+## About Me
+
+
+
+# Coins
+
+## What is the bias of this coin?
+
+```{r, out.width = '50%', fig.cap=' A potentially biased quarter'}
+knitr::include_graphics("quarter.png")
+```
+
+## Maybe No Bias?
+
+```{r}
+library(tidyverse)
+library(magrittr)
+library(gganimate)
+library(rstan)
+library(broom)
+
+set.seed(0)
+
+#Generate flip data
+coin = factor(c('T', 'H'), ordered= T)
+
+nflip = 10
+nround = 10
+nblock = 9
+flips = crossing(block = 1:nblock, round = -nround:-1, flip = 1:nflip)
+
+
+n = prod(c(nflip,nround,nblock))
+flips %<>% mutate(result = sample(coin, replace = T, size = n, prob = c(0.75,0.25)))
+```
+
+```{r}
+p1<-flips %>% 
+  filter(round==-1, block==1) %>% 
+  ggplot(aes(flip,round)) +
+  geom_tile(aes(fill= result), color = 'black', size = 1, width = 0.8, height = 0.8, show.legend = F)+
+  geom_text(aes(label = result), size = 12)+
+  theme_void()+
+  coord_equal()+
+  scale_fill_brewer(palette = 'Set1' )
+
+p1
+```
+
+## Looks Like a Bias Towards Tails?
+
+```{r, out.width='50%'}
+flips %>% 
+  filter(block==1) %>% 
+  ggplot(aes(flip,round)) +
+  geom_tile(aes(fill= result), color = 'black', size = 1, width = 0.8, height = 0.8, show.legend = F)+
+  geom_text(aes(label = result))+
+  theme_void()+
+  coord_equal()+
+  scale_fill_brewer(palette = 'Set1' )
+```
+
+
+## Almost Certainly Biased Towards Tails
+```{r, out.width='50%'}
+unfair.plot <-flips %>% 
+  ggplot(aes(flip,round)) +
+  geom_tile(aes(fill= result), color = 'black', size = 1)+
+  theme_void()+
+  coord_equal()+
+  scale_fill_brewer(palette = 'Set1' )+
+  facet_wrap(~block, nrow = 3)+
+  theme(legend.position = 'bottom',   strip.background = element_blank(), strip.text.x = element_blank())+
+  guides(fill=guide_legend(title = ''))
+
+unfair.plot
+```
+
+
+## Without Putting Words in Your Mouth...
+
+- You have a belief based on prior experience
+- You observed new coin flips
+- Those new flips changed your belief
+
+# Bayesian Statistics
+## Bayesian Statistics
+
+- Prior Belief
+- Observe Evidence/Data
+- Update Belief
+- Repeat!
+
+## Bayesian Statistics
+Encode your prior belief as a probability distribution $p(\theta)$.  Allow the data to change your belief through the likelihood $p(\bm{y} \vert \theta)$.  Your posterior belief is obtained via Bayes' rule $$ p(\theta \vert \bm{y} ) \propto p(\bm{y} \vert \theta) p(\theta)$$
+
+
+## I've Left A Lot Out
+
+I've left out a lot because Bayesian Statistics in 10 minutes is near herculean.
+
+
+## Personalized Medicine & Pharmacometrics
+
+- Some patients metabolize drugs improperly due to genetic variations
+- They still need these drugs, but dosing is incredibly tricky
+- Warfarin is a good example
+
+## Pie in the Sky
+
+- Predict a future patient's drug metabolism based on clinical/demographic/genetic covariates before they are given a script
+
+
+## Why Even Go Bayesian
+
+- Aren't there Frequentist methods to do this
+  - Yes (e.g. R's `nlmeODE`).
+- Why learn all this?
+  - Leverage prior studies/information, especially when $n$ is small.
+  - Be honest about variance of estimates
+  - Sequential improvement of model
+  
+
+## What Are My Priors
+
+- Need prior information to do any of this
+  - PK/PD models
+  - Physical understanding of what is possible, what is not
+  - Lots of literature re: genetics and drugs to be incorporated into model
+
+## Prior Information: PK models
+
+We know how drugs *should* be metabolized.  The dynamics are given by ODE models.
+
+$$
+\dfrac{d\mu}{dt} =  k_a \dfrac{D}{V}  {\rm e}^{- k_a  t}  - k\mu \>, \quad    \mu(0) = 0
+$$
+
+Gives a curve conditional on $k$ and $k_a$.
+
+$$
+\mu(t) = \dfrac{D \cdot k_a}{V \cdot (k-k_a) } \Big(\exp({-k_at}) - \exp({-kt}) \Big)
+$$
+We can get further information on $k$ and $k_a$ from literature, expert opinion, or empirically.
+
+## (One Possible) Full Model
+
+\begin{align*}
+\log(Y_t) \vert \mu(t), &\sigma \sim \mathcal{N}(\mu(t),\sigma)\\\\
+\mu(t) \lvert k_a,k &= \dfrac{D \cdot k_a}{V \cdot (k-k_a) } \Big(\exp({-k_at}) - \exp({-kt}) \Big)\\\\
+\sigma &\sim \rm{Half-Cauchy}(0,1)\\\\
+k &\sim \rm{Half-Cauchy}(0,1)\\\\
+k_a &\sim \rm{Half-Cauchy}(0,1)\\\\
+\end{align*}
+
+## More Concretely
+
+```{r, results = 'hide'}
+
+theme_set(theme_minimal())
+
+sim <- stan(file='~/Google Drive/PhD/Code/all_updated_exercises/1 - one_comp_lin_elim_abs/sim_one_comp_lin_elim_abs.stan', iter=1,chains=1, seed=194838, algorithm="Fixed_param")
+
+t0 = rstan::extract(sim)$t_init[1]
+C0 = array(rstan::extract(sim)$C_init[1,], dim = 1)
+D = rstan::extract(sim)$D[1]
+V = rstan::extract(sim)$V[1]
+times = rstan::extract(sim)$ts[1,]
+N_t = length(rstan::extract(sim)$ts[1,])
+C_hat = rstan::extract(sim)$C_hat[1,]
+
+y<- function(t,k,k_a){
+  y_0 = 1
+  D = 30.0
+  V = 2.0
+
+yhat <- (0.1e1 / (k - k_a) * D / V * k_a * exp(t * (k - k_a)) - 0.1e1 / (k - k_a) * k_a / V * D) * exp(-k * t)  
+
+return(yhat)
+}
+
+concentration.data = tibble(t= times, c = C_hat)
+true_solution = tibble(t = seq(0,10,0.01), ys = y(t, k = 0.5, k_a = 0.75))
+
+
+
+
+concentration.data %>% 
+  ggplot(aes(t,c))+
+  geom_point(size = 4, pch = 21, fill = 'black', color = 'white')+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))+
+  labs(x = 'Time', y = 'Concentration')
+```
+
+## Draws from $p(\theta)$
+```{r}
+set.seed(0)
+y_random<- function(t){
+  y_0 = 1
+  D = 30.0
+  V = 1
+  k_a = abs(rcauchy(1))
+  k = abs(rcauchy(1))
+
+yhat <- (0.1e1 / (k - k_a) * D / V * k_a * exp(t * (k - k_a)) - 0.1e1 / (k - k_a) * k_a / V * D) * exp(-k * t)  
+
+return(yhat)
+}
+
+
+random.curves = tibble(curve = 1:50, 
+                       t = list(seq(0,10,0.01)),
+                       yr = purrr::map(t,y_random)
+)
+
+random.curves %>% 
+  unnest(t,yr) %>% 
+  ggplot(aes(t,yr, group = curve))+
+  geom_line(alpha = 0.5, color = '#4F2683', size = 1)+
+  geom_point(data= concentration.data %>% mutate(curve = 1), aes(t, c), size = 4, pch = 21, fill = 'black', color = 'white')+
+  labs(x = 'Time', y = 'Concentration')+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))
+```
+
+## Draws from $p(\theta \vert \bm{y})$
+
+
+```{r, results = 'hide'}
+fit= readRDS('fit.RDS')
+```
+
+```{r}
+params = rstan::extract(fit)
+k = params$k[1:500]
+k_a = params$k_a[1:500]
+
+posterior = tibble(t = seq(0,10,0.01),
+                   k = list(k),
+                   k_a = list(k_a)
+                   ) %>% 
+            unnest() %>% 
+            mutate(c = y(t,k,k_a))
+
+
+concentration.data %>% 
+  ggplot(aes(t,c))+
+  geom_line(data = posterior, aes(t,c, group = interaction(k,k_a)), color = '#4F2683', alpha = 0.05 )+
+  #geom_line(data = true_solution, aes(t,ys), alpha = 1, color = 'yellow', size = 1)+
+  geom_point(size = 4, pch = 21, fill = 'black', color = 'white', )+
+  theme(aspect.ratio = 1/2, axis.title = element_text(size = 22))+
+  labs(x = 'Time', y = 'Concentration')
+  
+```
+
+## Marginal Posterior Distributions 
+
+```{r}
+true_params = data.frame(var = c('k','k[a]','sigma'), val = c(0.5, 0.75, 0.1))
+
+as.data.frame(fit) %>% 
+  select(k_a:sigma) %>% 
+  gather(var,val) %>% 
+  mutate(var = if_else(var=='k_a','k[a]',var)) %>% 
+  ggplot(aes(val))+
+  geom_histogram(fill = '#4F2683',color = 'black', bins = 20)+
+  geom_vline(data = true_params, aes(xintercept = val), color = 'gray', size = 2)+
+  facet_wrap(~var, scale = 'free', nrow = 2,labeller = label_parsed)+
+  theme_classic()+
+  theme(aspect.ratio = 1/2, strip.text.x = element_text(size = 22))+
+  scale_y_continuous(breaks = seq(100,300,100))+
+  labs(x = '', y= '')
+```
+
+
+
+
+
+
+
+## This is Just the Begining 
+
+Still need to...
+
+- Meet with stakeholders/scientists.  Understand which population we are studying and indentify potential sources of bias/confounding
+- Construct good priors from data/expert knowledge
+- Construct a theoretical model
+- Code in `Stan`
+
+
+  
+  
+## Please Join Us!
+
+\centering
+
+```{r, out.width='75%'}
+knitr::include_graphics("rstudio.png")
+```
+\tiny The slides, plots, and computations for this presentation were all done in R!
+
+## 
+
+\centering
+Questions
