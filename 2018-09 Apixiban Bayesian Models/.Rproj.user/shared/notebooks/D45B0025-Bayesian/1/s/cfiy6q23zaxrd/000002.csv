@@ -1,0 +1,122 @@
+"0","```r
+stan_glm1 <- stan_glm(fc ~ t, offset = log(N),
+                      data = user.data, 
+                      family = poisson(),
+                      prior = normal(0,2.5), 
+                      prior_intercept = normal(0,5),
+                      iter = 2000,
+                      warmup = 1000,
+                      chains = 4, 
+                      cores = 2,
+                      seed = 19920908)
+```"
+"1","starting worker pid=3141 on localhost:11260 at 00:09:49.377
+starting worker pid=3149 on localhost:11260 at 00:09:49.613
+
+SAMPLING FOR MODEL 'count' NOW (CHAIN 1).
+
+Gradient evaluation took 0.000527 seconds
+1000 transitions using 10 leapfrog steps per transition would take 5.27 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 2000 [  0%]  (Warmup)
+Iteration:  200 / 2000 [ 10%]  (Warmup)
+Iteration:  400 / 2000 [ 20%]  (Warmup)
+Iteration:  600 / 2000 [ 30%]  (Warmup)
+Iteration:  800 / 2000 [ 40%]  (Warmup)
+Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Iteration: 2000 / 2000 [100%]  (Sampling)
+
+ Elapsed Time: 0.064759 seconds (Warm-up)
+               0.069215 seconds (Sampling)
+               0.133974 seconds (Total)
+
+
+SAMPLING FOR MODEL 'count' NOW (CHAIN 3).
+
+Gradient evaluation took 7.9e-05 seconds
+1000 transitions using 10 leapfrog steps per transition would take 0.79 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 2000 [  0%]  (Warmup)
+Iteration:  200 / 2000 [ 10%]  (Warmup)
+Iteration:  400 / 2000 [ 20%]  (Warmup)
+Iteration:  600 / 2000 [ 30%]  (Warmup)
+Iteration:  800 / 2000 [ 40%]  (Warmup)
+Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Iteration: 2000 / 2000 [100%]  (Sampling)
+
+ Elapsed Time: 0.060835 seconds (Warm-up)
+               0.085737 seconds (Sampling)
+               0.146572 seconds (Total)
+
+
+SAMPLING FOR MODEL 'count' NOW (CHAIN 2).
+
+Gradient evaluation took 2e-05 seconds
+1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 2000 [  0%]  (Warmup)
+Iteration:  200 / 2000 [ 10%]  (Warmup)
+Iteration:  400 / 2000 [ 20%]  (Warmup)
+Iteration:  600 / 2000 [ 30%]  (Warmup)
+Iteration:  800 / 2000 [ 40%]  (Warmup)
+Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Iteration: 2000 / 2000 [100%]  (Sampling)
+
+ Elapsed Time: 0.061806 seconds (Warm-up)
+               0.055157 seconds (Sampling)
+               0.116963 seconds (Total)
+
+
+SAMPLING FOR MODEL 'count' NOW (CHAIN 4).
+
+Gradient evaluation took 2e-05 seconds
+1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 2000 [  0%]  (Warmup)
+Iteration:  200 / 2000 [ 10%]  (Warmup)
+Iteration:  400 / 2000 [ 20%]  (Warmup)
+Iteration:  600 / 2000 [ 30%]  (Warmup)
+Iteration:  800 / 2000 [ 40%]  (Warmup)
+Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Iteration: 2000 / 2000 [100%]  (Sampling)
+
+ Elapsed Time: 0.061322 seconds (Warm-up)
+               0.065836 seconds (Sampling)
+               0.127158 seconds (Total)
+"
+"1","Warning message:
+Warning message:
+package ‘ggplot2’ was built under R version 3.4.4 
+package ‘ggplot2’ was built under R version 3.4.4 
+"
+"0","```r
+pp_check(stan_glm1, plotfun = \"stat_2d\", stat = c('mean','sd')) + theme_minimal()
+```"

@@ -1,0 +1,24 @@
+"0","```r
+library(mgcv)
+library(tidyverse)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+
+
+apixaban.data = read_csv('ApixibanExperimentData.csv')
+```"
+"1","Parsed with column specification:
+cols(
+  Time = col_double(),
+  Subject = col_integer(),
+  Concentration = col_double(),
+  Group = col_character(),
+  Sex = col_character()
+)
+"
+"0","```r
+apixaban.data %>% 
+  ggplot(aes(Time, Concentration))+
+  geom_point()+
+  facet_grid(Sex ~ Group)
+```"

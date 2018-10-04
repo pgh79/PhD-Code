@@ -1,0 +1,128 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(mgcv)
+library(tidyverse)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+
+
+apixaban.data = read_csv('ApixibanExperimentData.csv')
+
+apixaban.data %>% 
+  ggplot(aes(Time, Concentration))+
+  geom_point()+
+  facet_grid(Sex ~ Group)
+```
+
+```{r}
+num.patients = length(unique(apixaban.data$Subject))
+C_hat = apixaban.data$Concentration
+measured_t = apixaban.data$Time
+times = sort(unique(measured_t))
+
+D = 2.5
+t0 = 0
+C0 = array(c(0), dim = 1)
+N_t = length(measured_t)
+N_tt = length(times)
+ix = rep(seq_along(times),num.patients)
+stan_rdump(c("t0", "C0", "D", "times", "N_t", "C_hat", 'N_tt', 'ix'), file="one_comp_lin_elim_abs.data.R")
+input_data <- read_rdump("one_comp_lin_elim_abs.data.R")
+
+```
+
+
+```{stan output.var=model}
+
+functions {
+  real[] one_comp_lin_elim_abs(real t,
+                               real[] y,
+                               real[] theta,
+                               real[] x_r,
+                               int[] x_i) {
+    real dydt[1];
+    real k_a = theta[1]; // Dosing rate in 1/day
+    real k = theta[2];   // Elimination rate in 1/day
+    real D = x_r[1];
+    real V = x_r[2];
+    real dose = 0;
+    real elim = k * y[1];
+
+    if (t > 0)
+      dose = exp(- k_a * t) * D * k_a / V;
+
+    dydt[1] = dose - elim;
+
+    return dydt;
+  }
+}
+
+data {
+  real t0;    // Initial time in days;
+  real C0[1]; // Initial concentration at t0 in mg/L
+
+  real D;   // Total dosage in mg
+  //real V;   // Compartment volume in L
+
+  int<lower=1> N_t;
+  int<lower=1> N_tt;
+  real measured_t[N_t];
+  real times[N_t];   // Measurement times in days
+  real ix[N_t];
+
+  // Measured concentrations in effect compartment in mg/L
+  real C_hat[N_t];
+}
+
+transformed data {
+  real x_r[1] = {D};
+  int x_i[0];
+}
+
+parameters {
+  real<lower=0> k_a; // Dosing rate in 1/day
+  real<lower=0> k;   // Elimination rate in 1/day
+  real<lower=0> sigma;
+  real<lower=0> V;
+}
+
+transformed parameters {
+  real C[N_tt, 1];
+  {
+    real theta[2] = {k_a, k};
+    C = integrate_ode_bdf(one_comp_lin_elim_abs, C0, t0, times, theta, x_r, x_i);
+  }
+}
+
+model {
+  // Priors
+  k_a ~ cauchy(0, 1);
+  k ~ cauchy(0, 1);
+  sigma ~ cauchy(0, 1);
+  V ~ cauchy(0, 1);
+
+  // Likelihood
+  //FIX HERE?
+  for (n in ix)
+    C_hat[n] ~ lognormal(log(C[ j, 1]), sigma);
+}
+
+generated quantities {
+  real C_ppc[N_t];
+  for (n in ix)
+    C_ppc[n] = lognormal_rng(log(C[ j, 1]), sigma);
+}
+
+
+```
+
+
+
+```{r}
+rstan::sampling(model, data = input_data )
+```
+

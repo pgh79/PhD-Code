@@ -1,0 +1,11 @@
+"0","input_data <- read_rdump(""apixaban_model.data.R"")"
+"0",""
+"0","input_data$C0 %>% length"
+"1","[1]"
+"1"," 1"
+"1","
+"
+"0","rstan::sampling(apixaban.model,data = input_data)"
+"2","Error in rstan::sampling(apixaban.model, data = input_data) : 
+  object 'apixaban.model' not found
+"

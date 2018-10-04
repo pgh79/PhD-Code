@@ -1,0 +1,14 @@
+"0","```r
+rstanarm::predictive_interval(stan_glm2, offset = log(user.data$N), draws = 4000) %>% 
+  as.data.frame() %>% 
+  mutate(t = seq(0,18),
+         pred =exp(-1.068+0.072*t) ) %>% 
+  inner_join(user.data, by = 't') %>% 
+  ggplot(aes(month,pred))+
+  geom_line()+
+  geom_point(data = user.data %>% mutate(draw = 1), aes(month,fc/N))+
+  geom_ribbon(aes(ymin = `5%`/N, ymax = `95%`/N), alpha = 0.25)+
+  labs(x = 'Time', y = 'Favorites per Tweet')+
+  theme_minimal()+
+  theme(aspect.ratio = 1)
+```"

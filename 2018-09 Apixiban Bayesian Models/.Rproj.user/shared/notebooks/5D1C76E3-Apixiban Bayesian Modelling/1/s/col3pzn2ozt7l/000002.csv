@@ -1,0 +1,50 @@
+"0","library(mgcv)"
+"2","Loading required package: nlme
+"
+"2","This is mgcv 1.8-24. For overview type 'help(""mgcv-package"")'.
+"
+"0","library(tidyverse)"
+"2","[30m── [1mAttaching packages[22m ─────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──[39m
+"
+"2","[30m[32m✔[30m [34mggplot2[30m 3.0.0     [32m✔[30m [34mpurrr  [30m 0.2.5
+[32m✔[30m [34mtibble [30m 1.4.2     [32m✔[30m [34mdplyr  [30m 0.7.6
+[32m✔[30m [34mtidyr  [30m 0.8.1     [32m✔[30m [34mstringr[30m 1.3.1
+[32m✔[30m [34mreadr  [30m 1.1.1     [32m✔[30m [34mforcats[30m 0.3.0[39m
+"
+"2","[30m── [1mConflicts[22m ────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+[31m✖[30m [34mdplyr[30m::[32mcollapse()[30m masks [34mnlme[30m::collapse()
+[31m✖[30m [34mdplyr[30m::[32mfilter()[30m   masks [34mstats[30m::filter()
+[31m✖[30m [34mdplyr[30m::[32mlag()[30m      masks [34mstats[30m::lag()[39m
+"
+"0","library(rstan)"
+"2","Loading required package: StanHeaders
+"
+"2","rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+"
+"2","For execution on a local, multicore CPU with excess RAM we recommend calling
+options(mc.cores = parallel::detectCores()).
+To avoid recompilation of unchanged Stan programs, we recommend calling
+rstan_options(auto_write = TRUE)
+"
+"2","
+Attaching package: ‘rstan’
+
+"
+"2","The following object is masked from ‘package:tidyr’:
+
+    extract
+
+"
+"0","options(mc.cores = parallel::detectCores())"
+"0",""
+"0",""
+"0","apixaban.data = read_csv('Data/ApixibanExperimentData.csv') %>% filter(Time>0)"
+"2","Parsed with column specification:
+cols(
+  Time = col_double(),
+  Subject = col_integer(),
+  Concentration = col_double(),
+  Group = col_character(),
+  Sex = col_character()
+)
+"

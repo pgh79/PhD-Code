@@ -1,0 +1,73 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(mgcv)
+library(tidyverse)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+
+
+apixaban.data = read_csv('Data/ApixibanExperimentData.csv') %>% filter(Time>0)
+
+```
+
+```{r}
+num.patients = length(unique(apixaban.data$Subject))
+C_hat = apixaban.data$Concentration
+measured_t = apixaban.data$Time
+times = sort(unique(measured_t))
+
+D = 2.5
+t0 = 0
+C0 = array(c(0), dim = 1)
+N_t = length(measured_t)
+N_tt = length(times)
+ix = rep(seq_along(times),num.patients)
+stan_rdump(c("t0", "C0", "D", "times", "N_t", "C_hat", 'N_tt', 'ix'), file="Data/one_comp_lin_elim_abs.data.R")
+input_data <- read_rdump("Data/one_comp_lin_elim_abs.data.R")
+
+```
+
+
+
+```{r}
+fit = rstan::stan(file = 'simple_model.stan',data = input_data, chains = 4)
+```
+
+
+
+```{r}
+plot(fit, show_density = T)
+```
+
+
+```{r}
+params = rstan::extract(fit)
+```
+
+
+```{r}
+
+mcmc = data_frame(concentration = apply(params$C,2,median), time = times)
+
+ppi = apply(params$C_ppc,2,function(x) quantile(x,probs = c(0.025,0.975)) ) %>% t()
+
+colnames(ppi) = c('L','U')
+
+mcmc = mcmc %>% 
+  bind_cols(ppi %>% as.data.frame()
+)
+
+ggplot()+
+  geom_point(data = apixaban.data, aes(Time,Concentration))+
+  geom_point(data = mcmc, aes(time,concentration), color = 'red')+
+  geom_errorbar(data = mcmc, aes(time,ymin = L,ymax = U), color = 'red',fill= 'red')
+
+mcmc
+
+
+```
+

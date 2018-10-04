@@ -1,0 +1,7 @@
+"0","plot(fit, show_density = T)"
+"2","'pars' not specified. Showing first 10 parameters by default.
+"
+"2","ci_level: 0.8 (80% intervals)
+"
+"2","outer_level: 0.95 (95% intervals)
+"
