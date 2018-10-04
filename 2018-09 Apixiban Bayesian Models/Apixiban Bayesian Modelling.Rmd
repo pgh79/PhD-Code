@@ -96,7 +96,7 @@ model.ppc %>%
   ggplot(aes(x = Time, y = Concentration))+
   geom_line(color = 'red')+
   geom_ribbon(aes(ymin = cred_int_l, ymax = cred_int_u),fill = 'red', size = 0, alpha = 0.25)+
-  geom_point(data = apixaban.data, aes(Time, Concentration), alpha = 0.05)+
+  geom_point(data = apixaban.data, aes(Time, Concentration), alpha = 0.5)+
   labs(title = 'Posterior Predictive Check')
 
 ```
