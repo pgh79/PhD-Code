@@ -1,12 +1,12 @@
 library(tidyverse)
 
 
-conc = read_csv('ApixibanConc.csv') %>% 
+conc = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanConc.csv') %>% 
        na.omit() %>% 
        gather(Subject,Concentration,-Time) %>% 
        mutate(Subject = as.factor(Subject))
 
-groups = read_csv('ApixabanGroups.csv') %>% 
+groups = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixabanGroups.csv') %>% 
           mutate(Subject = as.factor(Subject))
 
 
@@ -16,9 +16,10 @@ data = conc %>%
       mutate(Sex = if_else(Sex=='m','Male','Female'))
 
 data %>% 
-  ggplot(aes(Time,Concentration,color = interaction(Group,Sex)))+
+  ggplot(aes(Time,Concentration))+
   stat_summary(fun.data = function(x) mean_se(x,1.96), size = 1, geom = 'errorbar')+
   stat_summary(fun.y = mean, geom = 'line')+
+  facet_grid(Sex ~ Group)+
   stat_summary(fun.y = mean, geom = 'point', size = 2)+
   scale_color_brewer(palette = 'Set1')+
   theme_minimal()
@@ -31,4 +32,4 @@ data %>%
   theme_minimal()
 
 data %>% 
-  write_csv('ApixibanExperimentData.csv')
+  write_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentData.csv')

@@ -79,7 +79,7 @@ model {
   sigma ~ cauchy(0, 1);
   
   //Following based off of some googling
-  V ~ normal(.1, 0.075);
+  V ~ normal(.1, 0.075); //THis is in Litres
 
   // Likelihood
   // for (n in 1:N_t)

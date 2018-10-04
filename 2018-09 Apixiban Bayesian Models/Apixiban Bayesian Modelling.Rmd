@@ -10,7 +10,10 @@ library(rstan)
 options(mc.cores = parallel::detectCores())
 
 
-apixaban.data = read_csv('Data/ApixibanExperimentData.csv') %>% filter(Time>0)
+apixaban.data = read_csv('Data/ApixibanExperimentData.csv') %>% 
+                filter(Time>0) %>% 
+                mutate(Concentration_orig = Concentration,
+                       Concentration = 10e-3*Concentration_orig) #resalced from ng/ml to mg/L
 
 ```
 
