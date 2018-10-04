@@ -1,0 +1,57 @@
+---
+title: "Title"
+short-title: 
+author: 
+short-author: 
+subtitle:  
+department: Department of Epidemiology \& Biostatistics \newline 
+            Schulich School of Medicine \& Dentistry
+institute: Western University
+title-logo: western.png
+logo-right: western.png
+logo-left: schulich.png
+date: "`r Sys.Date()`"
+fontsize: 12pt
+output:
+  beamer_presentation:
+    keep_tex: true
+    toc: false
+    slide_level: 3
+    template: WesternTemplate.tex
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      results = 'hide',
+                      out.width = '75%',
+                      fig.align = 'center',
+                      size = 'tiny')
+
+```
+
+
+###
+```{r}
+library(tidyverse)
+theme_set(
+  theme_minimal(base_size = 20,base_line_size = 1.5)
+  )
+data(diamonds)
+
+first_plot<-diamonds %>% 
+            ggplot(aes(carat,price))+
+            geom_point()
+```
+
+
+
+# New Section
+## New Subsection
+### This is a new slide
+\centering
+Thank You
+
+\tiny This presentation was made in Rstudio with Rmarkdown
