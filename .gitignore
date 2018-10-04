@@ -23,6 +23,7 @@
 # Logs and databases #
 ######################
 *.log
+*.ipynb_checkpoints
 
 
 # OS generated files #

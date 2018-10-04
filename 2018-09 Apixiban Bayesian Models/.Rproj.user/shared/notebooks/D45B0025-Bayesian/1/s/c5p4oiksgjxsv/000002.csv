@@ -1,5 +1,0 @@
-"0","```r
-plot(stan_glm2,pars = c('t','(Intercept)'), plotfun = 'hist')+
-  theme_minimal()+ 
-  theme(aspect.ratio = 1)
-```"
