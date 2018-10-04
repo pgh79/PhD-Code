@@ -1,6 +1,0 @@
-"0","ggplot()+
-  geom_point(data = apixaban.data, aes(Time,Concentration))+
-  geom_point(data = mcmc, aes(time,concentration), color = 'red')+
-  geom_errorbar(data = mcmc, aes(time,ymin = L,ymax = U), color = 'red',fill= 'red')
-"
-"2","Ignoring unknown parameters: fill"
