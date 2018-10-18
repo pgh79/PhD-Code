@@ -66,6 +66,8 @@ X = apixaban.data %>%
 
 X = X[, c('Intercept', 'Sex', 'Group', 'ITXN')]
 
+
+
 rstan::stan_rdump(c(
   "t0",
   "C0",
@@ -80,15 +82,13 @@ rstan::stan_rdump(c(
 ),
 file = "2018-09 Apixiban Bayesian Models/Data/model_7_data.data.R")
 
-input_data <-
-  read_rdump("2018-09 Apixiban Bayesian Models/Data/model_7_data.data.R")
+input_data <- read_rdump("2018-09 Apixiban Bayesian Models/Data/model_7_data.data.R")
 
 L = stan_fitter('model_7', input_data = input_data)
 params = L$params
 fit = L$fit
 
-
-params = rstan::extract(fit)
+file.remove("2018-09 Apixiban Bayesian Models/Data/model_7_data.data.R")
 #---- plots ----
 
 #----Bayesian Credible Intervals ----
