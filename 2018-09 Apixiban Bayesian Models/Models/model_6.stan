@@ -22,7 +22,7 @@ parameters {
   real<lower=0> k[N_patients];
   real<lower=0> k_a[N_patients];
   real<lower=0> V[N_patients];
-  real<lower=0>sigma[N_patients];
+  real<lower=0>sigma;
 }
 
 transformed parameters {
@@ -45,12 +45,12 @@ model {
   // Likelihood
   for (n in 1:N_patients)
     for (t in 1:N_t)
-      C_hat[n, t] ~ lognormal(log(C[n, t]), sigma[n]);
+      C_hat[n, t] ~ lognormal(log(C[n, t]) - sigma/2, sigma);
 }
 
 generated quantities {
   real C_ppc[N_patients, N_t];
   for (n in 1:N_patients)
     for (t in 1:N_t)
-      C_ppc[n, t] = lognormal_rng(log(C[n, t]), sigma[n]);
+      C_ppc[n, t] = lognormal_rng(log(C[n, t]) - sigma/2, sigma);
 }

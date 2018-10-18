@@ -37,7 +37,7 @@ model {
   // Likelihood
   for (n in 1:N_t)
     // C_hat[n] ~ normal(C_anal(times[n], D, V, k_a, k), sigma);
-    C_hat[n] ~ lognormal(log(C_anal(times[n], D, V, k_a, k)), sigma);
+    C_hat[n] ~ lognormal(log(C_anal(times[n], D, V, k_a, k)) - sigma/2, sigma);
 }
 
 generated quantities {
@@ -45,6 +45,6 @@ generated quantities {
   real C_ppc[N_ut];
   for (n in 1:N_ut) {
     C[n] = C_anal(utimes[n], D, V, k_a, k);
-    C_ppc[n] = lognormal_rng(log(C[n]), sigma);
+    C_ppc[n] = lognormal_rng(log(C[n]) - sigma/2, sigma);
   }
 }

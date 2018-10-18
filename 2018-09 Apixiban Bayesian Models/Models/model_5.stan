@@ -45,12 +45,12 @@ model {
   // Likelihood
   for (n in 1:N_patients)
     for (t in 1:N_t)
-      C_hat[n, t] ~ lognormal(log(C[n, t]), sigma[n]);
+      C_hat[n, t] ~ lognormal(log(C[n, t]) - sigma/2, sigma);
 }
 
 generated quantities {
   real C_ppc[N_patients, N_t];
   for (n in 1:N_patients)
     for (t in 1:N_t)
-      C_ppc[n, t] = lognormal_rng(log(C[n, t]), sigma[n]);
+      C_ppc[n, t] = lognormal_rng(log(C[n, t]) - sigma/2, sigma);
 }

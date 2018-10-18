@@ -115,7 +115,7 @@ model {
   sigma ~ cauchy(0,1);
   // Likelihood
   for (n in 1:N_t)
-    C_hat[n] ~ lognormal(log(C[n]), sigma);
+    C_hat[n] ~ lognormal(log(C[n]) - sigma/2, sigma);
     // C_hat[n] ~ normal(C[n], sigma);
 }
 
@@ -124,7 +124,7 @@ generated quantities {
   for (i in 1:2){
     for (j in 1:2){
       for (n in 1:N_ut)
-        C_ppc[i,n,j] = lognormal_rng(log(C_pred[i,n,j]), sigma);
+        C_ppc[i,n,j] = lognormal_rng(log(C_pred[i,n,j]) - sigma/2, sigma);
         // C_ppc[i,n,j] = normal_rng(C_pred[i,n,j], sigma);
     }
   }

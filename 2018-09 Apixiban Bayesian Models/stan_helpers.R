@@ -10,8 +10,7 @@ stan_fitter <- function(model_name, input_data){
   #Save fit
   data_dir = '2018-09 Apixiban Bayesian Models/Data/'
   data_name = paste(data_dir,model_name,'_fit.rds', sep = '')
-  saveRDS(fit, file = data_name)
-  
+
   #return params
   params = rstan::extract(fit)
   

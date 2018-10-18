@@ -60,7 +60,7 @@ model {
 
   // Likelihood
   for (n in 1:N_t)
-    C_hat[n] ~ lognormal(log(C[n]), sigma);
+    C_hat[n] ~ lognormal(log(C[n]) - sigma/2, sigma);
     // C_hat[n] ~ normal(C[n], sigma);
 }
 
@@ -68,7 +68,7 @@ generated quantities {
   real C_ppc[2,N_ut];
   for (i in 1:2){
     for (n in 1:N_ut)
-      C_ppc[i,n] = lognormal_rng(log(C_pred[i,n]), sigma);
+      C_ppc[i,n] = lognormal_rng(log(C_pred[i,n])- sigma/2, sigma);
     // C_ppc[i,n] = normal_rng(C_pred[i,n], sigma);
   }
 }
