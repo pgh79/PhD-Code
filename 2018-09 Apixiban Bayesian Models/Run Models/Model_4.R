@@ -23,7 +23,8 @@ apixaban.plot = apixaban.data %>%
   scale_color_brewer(palette = 'Set1')+
   scale_fill_brewer(palette = 'Set1')+
   facet_grid(Sex~Group)+
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1)+
+  guides(color=F, fill= F)
 
 #---- Prepare Data ----#
 
