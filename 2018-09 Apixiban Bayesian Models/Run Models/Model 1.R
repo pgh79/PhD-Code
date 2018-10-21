@@ -76,7 +76,7 @@ preds %>%
   )
 
 
-C = apply(params$C,2, median)
+C = apply(params$C,2, mean)
 C_interval = apply(params$C,2, function(x) quantile(x,c(0.025,0.975))) %>% t()
 
 
@@ -89,6 +89,7 @@ preds = data_frame(Concentration = C,
 
 apixaban.plot+
   stat_summary(fun.y = median, geom = 'point', shape = 21, size = 5)+
+  geom_point(alpha = 0.25)+
   geom_line(data = preds, color = 'red')+
   geom_ribbon(data= preds,aes(ymin = C_L, ymax = C_U), fill = 'red', alpha= 0.5)
 

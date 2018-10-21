@@ -30,20 +30,36 @@ apixaban.plot = apixaban.data %>%
 
 t0 = 0
 C0 = array(c(0), dim = 1)
-
 D = 2.5
 
-times = apixaban.data$Time
-utimes = unique(times) %>% sort
-utimes = seq(min(utimes), max(utimes), length.out = 100)
-sex = apixaban.data$Sex %>% factor %>% as.numeric - 1
-group = apixaban.data$Group %>% factor %>% as.numeric -1
+cdata = apixaban.data %>%
+  select(Subject, Time, Concentration) %>%
+  spread(Time, Concentration) %>%
+  arrange(Subject)
+
+subjects = cdata$Subject
+N_patients = length(subjects)
+C_hat = cdata %>% select(-Subject) %>% as.matrix
+times = apixaban.data$Time %>% unique %>% sort
 N_t = length(times)
-N_ut = length(utimes)
 
-C_hat = apixaban.data$Concentration
+Xs = apixaban.data %>%
+  select(Subject, Sex, Group) %>%
+  arrange(Subject) %>%
+  distinct() 
+  
 
-rstan::stan_rdump(c("t0", "C0", "D", "times", "utimes", "sex", "N_t", "N_ut", "C_hat"), 
+X = Xs %>% 
+  mutate(
+    Intercept = 1,
+    Sex = Sex %>% factor %>% as.numeric - 1,
+    Group = Group %>% factor %>% as.numeric - 1,
+    INTXN = Sex * Group) %>% 
+  select(-Subject) %>%
+  select(Intercept, Sex, Group, INTXN) %>% 
+  as.matrix
+
+rstan::stan_rdump(c("t0", "C0", "D", "times", "N_t", "X", "C_hat", 'N_patients'), 
                   file="2018-09 Apixiban Bayesian Models/Data/model_4_data.data.R")
 
 input_data <- read_rdump("2018-09 Apixiban Bayesian Models/Data/model_4_data.data.R")
@@ -55,41 +71,44 @@ fit = L$fit
 
 
 
-#---- Plots ----
+#----Bayesian Credible Intervals----
 
-mcmc_areas(as.matrix(fit),  
-           regex_pars = 'b',
-           prob = 0.95, # 80% intervals
-           prob_outer = 0.99, # 99%
-           point_est = "mean")
+y = params$C
+N =  dim(y)[1]
 
-bpl = mcmc_pairs(
-  as.matrix(fit),
-  regex_pars = 'b',
-  np = nuts_params(fit), 
-  np_style = scatter_style_np(div_color = "green", div_alpha = 0.8)
-)
+simulations = y %>%
+  as.table() %>%
+  `dimnames<-`(list(
+    Round = 1:N ,
+    Subject = subjects,
+    Time = times
+  )) %>%
+  as.data.frame.table(responseName = 'Concentration', stringsAsFactors = F) %>%
+  mutate(
+    Time = as.numeric(Time),
+    Subject = as.numeric(Subject),
+    Round = as.numeric(Round)
+  ) %>%
+  bind_rows(apixaban.data %>% select(Time, Concentration, Subject)) %>%
+  mutate(
+    Round = replace_na(Round, N + 1),
+    Kind = if_else(Round > N, 'Data', 'Simulation')
+  ) %>% 
+  left_join(Xs, by = 'Subject')
 
 
-x = params$C_pred
-y = apply(x,c(2,3,4),mean)
-dimnames(y) <- list(Sex = c('Female','Male'),Time = utimes,Group =  c('Control','NAFLD'))
+mcmc = simulations %>% 
+  group_by(Time,Sex,Group) %>% 
+  summarise(C = median(Concentration),
+            ymin = quantile(Concentration, 0.025),
+            ymax = quantile(Concentration, 0.975) ) %>% 
+  rename("Concentration" = "C")
 
-conc = as.data.frame.table(y, responseName = 'Concentration', stringsAsFactors = F) %>% 
-  mutate(Time = as.numeric(Time))
 
-z = apply(x,c(2,3,4),function(x) quantile(x,probs = c(0.025,0.975)))
-dimnames(z) <- list(quant = c('ymin','ymax'),
-                    Sex = c('Female','Male'),
-                    Time = utimes,
-                    Group =  c('Control','NAFLD'))
-
-lims = as.data.frame.table(z, responseName = 'Concentration', stringsAsFactors = F) %>% 
-       spread(quant,Concentration) %>% 
-       mutate(Time = as.numeric(Time))
-
-mcmc = conc %>% left_join(lims)
 
 apixaban.plot+
-  geom_line(data= mcmc)+
-  geom_ribbon(data = mcmc, aes(ymin = ymin, ymax = ymax), alpha = 0.25)
+  geom_line(data = mcmc)+
+  geom_ribbon(data = mcmc, aes(ymin = ymin, ymax = ymax), alpha = 0.5)
+
+
+# mcmc_areas(as.matrix(fit), regex_pars = c('beta'))
