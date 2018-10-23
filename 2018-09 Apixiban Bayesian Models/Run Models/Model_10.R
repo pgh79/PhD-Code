@@ -62,6 +62,7 @@ rstan::stan_rdump(c("t0", "C0", "D", "times", "N_t", "X", "C_hat", 'N_patients')
 
 input_data <- read_rdump(file.name)
 
+file.remove(file.name)
 #---- Fit Model -----
 
 model = '2018-09 Apixiban Bayesian Models/Models 2 Compartments/model_10_a.stan'
@@ -197,7 +198,7 @@ simulations %>%
     group = Round
   )) +
   geom_line()+
-  facet_wrap(~ Subject, scale = 'free_y') +
+  facet_wrap(~ Subject) +
   scale_color_brewer(palette = 'Set1')+
   labs(title = 'Posterior Draws', color = 'Data Source', fill = 'Data Source')
 

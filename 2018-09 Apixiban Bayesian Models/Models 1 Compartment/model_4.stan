@@ -14,6 +14,8 @@ data{
   real times[N_t];   // Measurement times in days
   matrix[N_patients,4] X;
   
+  real<lower=0> A;
+  
   
   //Use these for generating samples at time unique times
   
@@ -26,6 +28,7 @@ parameters {
   vector[4] beta_k;
   vector[4] beta_ka;
   real<lower=0> sigma;
+  real<lower=0, upper=1> alpha;
 }
 transformed parameters {
 
@@ -48,16 +51,17 @@ transformed parameters {
 model {
   
   
-  beta_v ~ normal(0,1);
-  beta_k ~ normal(0,1);
-  beta_ka~ normal(0,1);
+  beta_v ~ normal(0,2);
+  beta_k ~ normal(0,2);
+  beta_ka~ normal(0,2);
+  alpha ~ uniform(0,1);
   
   
   sigma ~ cauchy(0,1);
   // Likelihood
   for (p in 1:N_patients){
    for (n in 1:N_t)
-    C_hat[p,n] ~ lognormal(log(C[p,n]) - sigma/2, sigma); 
+    C_hat[p,n] ~ normal(C[p,n], pow(C[p,n]/A,2*alpha)*sigma); 
   }
 }
 
@@ -65,7 +69,7 @@ generated quantities {
   real C_ppc[N_patients,N_t];
   for (p in 1:N_patients){
    for (n in 1:N_t)
-    C_ppc[p,n] = lognormal_rng(log(C[p,n]) - sigma/2, sigma);
+    C_ppc[p,n] = normal_rng(C[p,n], pow(C[p,n]/A,2*alpha)*sigma); 
   }
 
 }
