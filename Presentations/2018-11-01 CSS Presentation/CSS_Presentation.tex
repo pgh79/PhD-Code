@@ -33,7 +33,6 @@
 \providecommand{\tightlist}{%
 	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{0}
-\usefonttheme{serif}
 
 %%Color Themes
 \usepackage{xcolor}
@@ -72,6 +71,7 @@
 
 %% Front matter conditionals.
 \title[Stats for ML]{Basic Statistics for Machine Learning}
+\subtitle{You Could Call It ``Statistical Learning''}
 \author[
 D.Pananos
 ]{Demetri Pananos}
@@ -106,49 +106,91 @@ Medicine \& Dentistry \\
 \hypertarget{intro}{%
 \subsection{Intro}\label{intro}}
 
-\begin{frame}{This Will Not Be Enough}
-\protect\hypertarget{this-will-not-be-enough}{}
+\begin{frame}{A First Approximation For The Difference Between ML and
+SL}
+\protect\hypertarget{a-first-approximation-for-the-difference-between-ml-and-sl}{}
 
 \begin{itemize}
-\tightlist
 \item
-  I'm not here to make you statisticians over night.\\
+  Some algorithms are built off of statistical concepts.
 \item
-  I'm here you familiarize you with statistical concepts that might
-  appear when you dabble in ML/DS/CSS.
+  Others seem ad hoc, with no immediate relationship to a statistical
+  theory
+\item
+  I would call the former \emph{statistical learning algorithms} and the
+  latter \emph{machine learning algorithms}.
 \end{itemize}
 
 \end{frame}
 
+\begin{frame}{A First Approximation For The Difference Between ML and
+SL}
+\protect\hypertarget{a-first-approximation-for-the-difference-between-ml-and-sl-1}{}
+
+The name ``machine learning'' is an unfortunate name. The machine
+``learns'' the neccesary associations in both types of learning.
+
+\end{frame}
+
+\begin{frame}{A First Approximation For The Difference Between ML and
+SL}
+\protect\hypertarget{a-first-approximation-for-the-difference-between-ml-and-sl-2}{}
+
+E.g. * Generalized Linear Models are Statistical Learning * Neural Nets
+are Machine Learning
+
+\end{frame}
+
+\begin{frame}{Goals}
+\protect\hypertarget{goals}{}
+
+\begin{itemize}
+\tightlist
+\item
+  Be able to understand what the chosen algorithm does
+\item
+  Be able to explain it in laymen's/sophmoric terminology
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Will Require an Understanding of The Following}
+\protect\hypertarget{will-require-an-understanding-of-the-following}{}
+
+\begin{itemize}
+\item
+  Manipulation of Probabilities
+\item
+  Expectations and Covariance
+\item
+  The Very Basics of Likelihood Theory
+\end{itemize}
+
+\end{frame}
+
+\hypertarget{probability}{%
+\subsection{Probability}\label{probability}}
+
 \begin{frame}{Probability}
-\protect\hypertarget{probability}{}
+\protect\hypertarget{probability-1}{}
 
-The Sum Rule
+Sum Rule
 
-\[ p(X) = \sum_Y P(X,Y) \] The Product Rule
+\[P(X) = \sum_Y P(X,Y)\]
 
-\[ P(X,Y) = p(Y|X)P(X)  \]
+Product/Chain Rule
 
-\end{frame}
-
-\begin{frame}{We Can Recover Bayes' Rule}
-\protect\hypertarget{we-can-recover-bayes-rule}{}
-
-\begin{align*}
-P(Y|X) &= \dfrac{P(X,Y)}{P(X)}\\\\
-       &= \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y)}
-\end{align*}
+\[P(X,Y) = P(Y|X)P(X)\]
 
 \end{frame}
 
-\begin{frame}{Thank You}
-\protect\hypertarget{thank-you}{}
+\begin{frame}{Probability}
+\protect\hypertarget{probability-2}{}
 
-\centering
+We can recover some very powerful rules just from these. \newline Bayes'
+Rule
 
-Thank You
-
-\tiny This presentation was made in Rstudio with Rmarkdown
+\[P(Y|X) = \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y) }\]
 
 \end{frame}
 

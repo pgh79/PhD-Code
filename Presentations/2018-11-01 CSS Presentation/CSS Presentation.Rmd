@@ -3,7 +3,7 @@ title: "Basic Statistics for Machine Learning"
 short-title: "Stats for ML"
 author: "Demetri Pananos"
 short-author: "D.Pananos"
-subtitle: 
+subtitle: 'You Could Call It "Statistical Learning"'
 department: Department of Epidemiology \& Biostatistics \newline 
             Schulich School of Medicine \& Dentistry
 institute: Western University
@@ -18,16 +18,17 @@ output:
     slide_level: 3
     template: ../WesternTemplate.tex
     latex_engine: xelatex
-header-includes:
-  - \usefonttheme{serif} 
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
+knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
                       message = FALSE,
                       results = 'hide',
-                      out.width = '75%',
+                      fig.width=4, 
+                      fig.height=3, 
+                      out.width="4in", 
+                      out.height="3in",
                       fig.align = 'center',
                       size = 'tiny')
 
@@ -35,30 +36,58 @@ knitr::opts_chunk$set(echo = TRUE,
 
 
 ## Intro
-### This Will Not Be Enough
+### A First Approximation For The Difference Between ML and SL
 
-* I'm not here to make you statisticians over night.  
-* I'm here you familiarize you with statistical concepts that might appear when you dabble in ML/DS/CSS.
+* Some algorithms are built off of statistical concepts.
 
+* Others seem ad hoc, with no immediate relationship to a statistical theory
+
+* I would call the former *statistical learning algorithms* and the latter *machine learning algorithms*.
+
+### A First Approximation For The Difference Between ML and SL
+
+The name "machine learning" is an unfortunate name.  The machine "learns" the neccesary associations in both types of learning.
+
+### A First Approximation For The Difference Between ML and SL
+
+E.g.
+* Generalized Linear Models are Statistical Learning
+* Neural Nets are Machine Learning
+
+### Goals
+
+* Be able to understand what the chosen algorithm does
+* Be able to explain it in laymen's/sophmoric terminology
+
+
+### Will Require an Understanding of The Following
+
+* Manipulation of Probabilities
+
+* Expectations and Covariance
+
+* The Very Basics of Likelihood Theory
+
+
+## Probability
 ### Probability
 
-The Sum Rule
+Sum Rule
 
-$$ p(X) = \sum_Y P(X,Y) $$
-The Product Rule
+$$P(X) = \sum_Y P(X,Y)$$
 
-$$ P(X,Y) = p(Y|X)P(X)  $$
+Product/Chain Rule
+
+$$P(X,Y) = P(Y|X)P(X)$$
 
 
-### We Can Recover Bayes' Rule
+### Probability
+We can recover some very powerful rules just from these.  For example, Bayes' Rule
 
-\begin{align*}
-P(Y|X) &= \dfrac{P(X,Y)}{P(X)}\\\\
-       &= \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y)}
-\end{align*}
+$$P(Y|X) = \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y) }$$
 
-### Thank You
-\centering
-Thank You
 
-\tiny This presentation was made in Rstudio with Rmarkdown
+## Expectation and Covariance
+
+* We're all familliar with expectations and variance for single variable distributions.
+* Now, generalize to larger distributions.

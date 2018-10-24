@@ -39,6 +39,8 @@ C_hat = cdata %>% select(-Subject) %>% as.matrix
 times = apixaban.data$Time %>% unique %>% sort
 N_t = length(times)
 
+A = median(C_hat)
+
 Xs = apixaban.data %>%
   select(Subject, Sex, Group) %>%
   arrange(Subject) %>%
@@ -57,7 +59,7 @@ X = Xs %>%
 
 
 file.name = "2018-09 Apixiban Bayesian Models/Data/model_data.data.R"
-rstan::stan_rdump(c("t0", "C0", "D", "times", "N_t", "X", "C_hat", 'N_patients'), 
+rstan::stan_rdump(c("t0", "C0", "D", "times", "N_t", "X", "C_hat", 'N_patients','A'), 
                   file=file.name)
 
 input_data <- read_rdump(file.name)
@@ -69,9 +71,11 @@ model = '2018-09 Apixiban Bayesian Models/Models 2 Compartments/model_10_a.stan'
 fit = rstan::stan(file = model,
                   data = input_data,
                   chains=2,
-                  control=list(adapt_delta=0.9))
+                  warmup = 2000,
+                  iter=4000,
+                  control=list(adapt_delta=0.95))
 
-params = rstan::extract(fit)
+params = rstan::extract (fit)
 #---- plots ----
 
 #----Bayesian Credible Intervals ----
@@ -203,30 +207,79 @@ simulations %>%
   labs(title = 'Posterior Draws', color = 'Data Source', fill = 'Data Source')
 
 
-# #---- Stuff ----
-# 
-# y = params$C_ppc[ , , ]
-# N =  dim(y)[1]
-# 
-# 
-# simulations = y %>%
-#   as.table() %>%
-#   `dimnames<-`(list(
-#     Round = 1:N ,
-#     Subject = subjects,
-#     Time = times
-#   )) %>%
-#   as.data.frame.table(responseName = 'SimulatedConcentration', stringsAsFactors = F) %>%
-#   mutate(
-#     Time = as.numeric(Time),
-#     Subject = as.numeric(Subject),
-#     Round = as.numeric(Round)
-#   ) %>%
-#   left_join(apixaban.data %>% select(Time, Concentration, Subject) %>% rename('RealConcentration' = 'Concentration'), by = c('Subject','Time'))
-# 
-# 
-# simulations %>%
-#   ggplot()+
-#   geom_histogram(aes(SimulatedConcentration))+
-#   geom_rug(aes(RealConcentration), color = 'red', size = 2)+
-#   facet_grid(Time~Subject)
+
+
+# ---- Pred vs Data ----
+
+
+y = params$C_ppc[ , , ]
+N =  dim(y)[1]
+
+simulations = y %>%
+  as.table() %>%
+  `dimnames<-`(list(
+    Round = 1:N ,
+    Subject = subject_names,
+    Time = times
+  )) %>%
+  as.data.frame.table(responseName = 'Concentration', stringsAsFactors = F) %>%
+  mutate(
+    Time = as.numeric(Time),
+    Subject = as.numeric(Subject),
+    Round = as.numeric(Round)
+  ) %>%
+  bind_rows(apixaban.data %>% select(Time, Concentration, Subject)) %>%
+  mutate(
+    Round = replace_na(Round, N + 1),
+    Kind = if_else(Round > N, 'Data', 'Simulation')
+  )
+
+
+
+
+simulations %>% 
+  group_by(Time,Subject,Kind) %>%  
+  summarise(C = mean(Concentration)) %>% 
+  spread(Kind,C) %>% 
+  ggplot(aes(Simulation, Data - Simulation))+
+  geom_point()+
+  geom_smooth()+
+  stat_function(fun = function(x) qnorm(0.975,0,(x/0.3833)^(0.66)*0.11), color = 'red')+
+  stat_function(fun = function(x) qnorm(0.025,0,(x/0.3833)^(0.66)*0.11), color = 'red')+
+  geom_hline(aes(yintercept = 0), color = 'red')
+theme(aspect.ratio = 1)
+
+
+#---- err ----
+
+y = params$C[, ,]
+N =  dim(y)[1]
+
+simulations = y %>%
+  as.table() %>%
+  `dimnames<-`(list(
+    Round = 1:N ,
+    Subject = subject_names,
+    Time = times
+  )) %>%
+  as.data.frame.table(responseName = 'Concentration', stringsAsFactors = F) %>%
+  mutate(
+    Time = as.numeric(Time),
+    Subject = as.numeric(Subject),
+    Round = as.numeric(Round)
+  ) %>%
+  bind_rows(apixaban.data %>% select(Time, Concentration, Subject)) %>%
+  mutate(Round = replace_na(Round, N + 1),
+         Kind = if_else(Round > N, 'Data', 'Simulation'))
+
+simulations %>%
+  group_by(Time, Subject, Kind) %>%
+  summarise(Concentration = mean(Concentration)) %>%
+  spread(Kind, Concentration) %>%
+  ungroup %>% 
+  mutate(err = Data - Simulation) %>%
+  ggplot(aes(Time, err)) +
+  geom_line() +
+  geom_hline(aes(yintercept = 0))+
+  facet_wrap( ~ Subject, scale = 'free_y')
+

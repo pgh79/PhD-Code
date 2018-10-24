@@ -56,8 +56,7 @@ data {
   int<lower=1> N_t;
   int<lower=1> N_patients;
   real times[N_t];   // Measurement times in days
-
-
+  real A;
   matrix[N_patients, 4] X;
   // Measured concentrations in effect compartment in mg/L
   real C_hat[N_patients,N_t];
@@ -149,7 +148,7 @@ model {
   // Likelihood
   for (p in 1:N_patients){
   for (n in 1:N_t)
-    C_hat[p,n] ~ normal(C[p,n], sigma*pow(C[p,n]/0.4,2*alpha));
+    C_hat[p,n] ~ normal(C[p,n], sigma*pow(C[p,n]/A,2*alpha));
     }
 }
 
@@ -157,6 +156,6 @@ generated quantities {
   real C_ppc[N_patients,N_t];
   for (p in 1:N_patients){
    for (n in 1:N_t)
-    C_ppc[p,n] = normal_rng(C[p,n], sigma*pow(C[p,n]/0.4,2*alpha));
+    C_ppc[p,n] = normal_rng(C[p,n], sigma*pow(C[p,n]/A,2*alpha));
   }
 }
