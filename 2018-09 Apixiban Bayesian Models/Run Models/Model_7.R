@@ -275,5 +275,36 @@ simulations %>%
   theme(aspect.ratio = 1)
 
 
+#---- err ----
 
+y = params$C[, ,]
+N =  dim(y)[1]
+
+simulations = y %>%
+as.table() %>%
+`dimnames<-`(list(
+  Round = 1:N ,
+  Subject = subject_names,
+  Time = times
+)) %>%
+as.data.frame.table(responseName = 'Concentration', stringsAsFactors = F) %>%
+mutate(
+  Time = as.numeric(Time),
+  Subject = as.numeric(Subject),
+  Round = as.numeric(Round)
+) %>%
+bind_rows(apixaban.data %>% select(Time, Concentration, Subject)) %>%
+mutate(Round = replace_na(Round, N + 1),
+       Kind = if_else(Round > N, 'Data', 'Simulation'))
+
+simulations %>%
+  group_by(Time, Subject, Kind) %>%
+  summarise(Concentration = mean(Concentration)) %>%
+  spread(Kind, Concentration) %>%
+  ungroup %>% 
+  mutate(err = Data - Simulation) %>%
+  ggplot(aes(Time, err)) +
+  geom_line() +
+  geom_hline(aes(yintercept = 0))+
+  facet_wrap( ~ Subject, scale = 'free_y')
 

@@ -1,0 +1,64 @@
+---
+title: "Basic Statistics for Machine Learning"
+short-title: "Stats for ML"
+author: "Demetri Pananos"
+short-author: "D.Pananos"
+subtitle: 
+department: Department of Epidemiology \& Biostatistics \newline 
+            Schulich School of Medicine \& Dentistry
+institute: Western University
+title-logo: ../western.png
+logo-right: ../western.png
+date: "`r Sys.Date()`"
+fontsize: 12pt
+output:
+  beamer_presentation:
+    keep_tex: true
+    toc: false
+    slide_level: 3
+    template: ../WesternTemplate.tex
+    latex_engine: xelatex
+header-includes:
+  - \usefonttheme{serif} 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      results = 'hide',
+                      out.width = '75%',
+                      fig.align = 'center',
+                      size = 'tiny')
+
+```
+
+
+## Intro
+### This Will Not Be Enough
+
+* I'm not here to make you statisticians over night.  
+* I'm here you familiarize you with statistical concepts that might appear when you dabble in ML/DS/CSS.
+
+### Probability
+
+The Sum Rule
+
+$$ p(X) = \sum_Y P(X,Y) $$
+The Product Rule
+
+$$ P(X,Y) = p(Y|X)P(X)  $$
+
+
+### We Can Recover Bayes' Rule
+
+\begin{align*}
+P(Y|X) &= \dfrac{P(X,Y)}{P(X)}\\\\
+       &= \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y)}
+\end{align*}
+
+### Thank You
+\centering
+Thank You
+
+\tiny This presentation was made in Rstudio with Rmarkdown

@@ -1,0 +1,157 @@
+% Western Themed Beamer
+
+\documentclass[12pt,ignorenonframetext,]{beamer}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{:}
+\setbeamercolor{caption name}{fg=normal text.fg}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\usepackage{lmodern}
+\ifxetex
+\usepackage{fontspec,xltxtra,xunicode}
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\newcommand{\euro}{€}
+\else
+\ifluatex
+\usepackage{fontspec}
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\newcommand{\euro}{€}
+\else
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\fi
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+\usefonttheme{serif}
+
+%%Color Themes
+\usepackage{xcolor}
+\definecolor{helmuth}{RGB}{79, 38, 131/250} % 
+\definecolor{westernSilver}{RGB}{128,127,131} %
+
+\usetheme{Madrid}
+\useoutertheme{miniframes}\useinnertheme{circles}
+\setbeamertemplate{navigation symbols}{}
+%Set Beamer Colors
+\setbeamercolor{palette primary}{bg=helmuth,fg=white}
+\setbeamercolor{palette secondary}{bg=helmuth,fg=white}
+\setbeamercolor{palette tertiary}{bg=helmuth,fg=white}
+\setbeamercolor{palette quaternary}{bg=helmuth,fg=white}
+\setbeamercolor{structure}{fg=helmuth} % itemize, enumerate, etc
+\setbeamercolor{section in toc}{fg=helmuth} % TOC sections
+\setbeamercolor*{titlelike}{fg=white,bg=helmuth}
+\setbeamercolor{subsection in head/foot}{bg=westernSilver,fg=white}
+\setbeamercolor{itemize item}{fg=black}
+\setbeamercolor{enumerate item}{fg=black}
+
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{enumerate items}[default]
+
+
+
+%% Beamer Behaviour
+\AtBeginPart{}
+\AtBeginSection{}
+\AtBeginSubsection{}
+\AtBeginSubsubsection{}
+\setlength{\emergencystretch}{0em}
+\setlength{\parskip}{0pt}
+
+
+
+%% Front matter conditionals.
+\title[Stats for ML]{Basic Statistics for Machine Learning}
+\author[
+D.Pananos
+]{Demetri Pananos}
+\institute[
+]{
+		\includegraphics[width=15mm,keepaspectratio]{../western.png}\\
+	\vspace{2 mm}
+			Department of Epidemiology \& Biostatistics \newline Schulich School of
+Medicine \& Dentistry \\
+		Western University
+	}
+
+
+\logo{
+						\includegraphics[width=7.5mm,keepaspectratio]{../western.png}
+		}
+
+
+\date[
+2018-10-24
+]{
+		2018-10-24
+			}
+
+
+\begin{document}
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+\hypertarget{intro}{%
+\subsection{Intro}\label{intro}}
+
+\begin{frame}{This Will Not Be Enough}
+\protect\hypertarget{this-will-not-be-enough}{}
+
+\begin{itemize}
+\tightlist
+\item
+  I'm not here to make you statisticians over night.\\
+\item
+  I'm here you familiarize you with statistical concepts that might
+  appear when you dabble in ML/DS/CSS.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Probability}
+\protect\hypertarget{probability}{}
+
+The Sum Rule
+
+\[ p(X) = \sum_Y P(X,Y) \] The Product Rule
+
+\[ P(X,Y) = p(Y|X)P(X)  \]
+
+\end{frame}
+
+\begin{frame}{We Can Recover Bayes' Rule}
+\protect\hypertarget{we-can-recover-bayes-rule}{}
+
+\begin{align*}
+P(Y|X) &= \dfrac{P(X,Y)}{P(X)}\\\\
+       &= \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y)}
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{Thank You}
+\protect\hypertarget{thank-you}{}
+
+\centering
+
+Thank You
+
+\tiny This presentation was made in Rstudio with Rmarkdown
+
+\end{frame}
+
+
+
+\end{document}
