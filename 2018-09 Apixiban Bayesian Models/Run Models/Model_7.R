@@ -146,6 +146,7 @@ simulations %>%
   scale_fill_brewer(palette = 'Set1')+
   labs(title = 'Bayesian Credible Interval', color = 'Data Source', fill = 'Data Source')
 
+ggsave('model_7_BCI.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 #----Posterior Predictive Interval----
 
@@ -192,6 +193,8 @@ simulations %>%
   scale_fill_brewer(palette = 'Set1')+
   labs(title = 'Posterior Predictive Interval', color = 'Data Source', fill = 'Data Source')
 
+ggsave('model_7_PPI.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
+
 #----Draws From Posterior----
 
 y = params$C_ppc[ , , ]
@@ -233,6 +236,7 @@ simulations %>%
   scale_alpha_identity()+
   labs(title = 'Posterior Draws', color = 'Data Source', fill = 'Data Source')
 
+ggsave('model_7_DFP.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 # ---- Pred vs Data ----
 
@@ -274,7 +278,8 @@ simulations %>%
   geom_hline(aes(yintercept = 0), color = 'red')
   theme(aspect.ratio = 1)
 
-
+ggsave('model_7_PVD.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
+  
 #---- err ----
 
 y = params$C[, ,]
@@ -308,3 +313,4 @@ simulations %>%
   geom_hline(aes(yintercept = 0))+
   facet_wrap( ~ Subject, scale = 'free_y')
 
+ggsave('model_7_err.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')

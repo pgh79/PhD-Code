@@ -91,9 +91,9 @@ Medicine \& Dentistry \\
 
 
 \date[
-2018-10-24
+2018-10-31
 ]{
-		2018-10-24
+		2018-10-31
 			}
 
 
@@ -103,73 +103,68 @@ Medicine \& Dentistry \\
 \titlepage
 \end{frame}
 
-\hypertarget{intro}{%
-\subsection{Intro}\label{intro}}
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
 
-\begin{frame}{A First Approximation For The Difference Between ML and
-SL}
-\protect\hypertarget{a-first-approximation-for-the-difference-between-ml-and-sl}{}
+\begin{frame}{I Have A Problem}
+\protect\hypertarget{i-have-a-problem}{}
+
+\begin{center}\includegraphics{CSS_Presentation_files/figure-beamer/unnamed-chunk-1-1} \end{center}
+
+\end{frame}
+
+\begin{frame}{I Have a Problem}
+\protect\hypertarget{i-have-a-problem-1}{}
+
+\begin{center}\includegraphics{CSS_Presentation_files/figure-beamer/unnamed-chunk-2-1} \end{center}
+
+\end{frame}
+
+\begin{frame}{How Can I Solve It?}
+\protect\hypertarget{how-can-i-solve-it}{}
 
 \begin{itemize}
 \item
-  Some algorithms are built off of statistical concepts.
+  We can do this in a variety of ways.
 \item
-  Others seem ad hoc, with no immediate relationship to a statistical
-  theory
+  Some are very statistical. Some are very complicated.
 \item
-  I would call the former \emph{statistical learning algorithms} and the
-  latter \emph{machine learning algorithms}.
+  Some are in the middle. I'll call those \emph{statistical learning
+  algorithms}.
 \end{itemize}
 
 \end{frame}
 
-\begin{frame}{A First Approximation For The Difference Between ML and
-SL}
-\protect\hypertarget{a-first-approximation-for-the-difference-between-ml-and-sl-1}{}
-
-The name ``machine learning'' is an unfortunate name. The machine
-``learns'' the neccesary associations in both types of learning.
-
-\end{frame}
-
-\begin{frame}{A First Approximation For The Difference Between ML and
-SL}
-\protect\hypertarget{a-first-approximation-for-the-difference-between-ml-and-sl-2}{}
-
-E.g. * Generalized Linear Models are Statistical Learning * Neural Nets
-are Machine Learning
-
-\end{frame}
-
-\begin{frame}{Goals}
-\protect\hypertarget{goals}{}
-
-\begin{itemize}
-\tightlist
-\item
-  Be able to understand what the chosen algorithm does
-\item
-  Be able to explain it in laymen's/sophmoric terminology
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Will Require an Understanding of The Following}
-\protect\hypertarget{will-require-an-understanding-of-the-following}{}
+\begin{frame}{Statistical Decision Theory}
+\protect\hypertarget{statistical-decision-theory}{}
 
 \begin{itemize}
 \item
-  Manipulation of Probabilities
+  The ``Theorectically Optimal'' way to do this would require knowing
+  \(P( \mbox{Is Red} \vert X,Y)\).
 \item
-  Expectations and Covariance
+  Maybe approximating this conditional distribution will be enough.
 \item
-  The Very Basics of Likelihood Theory
+  But first, a little vocabularty
 \end{itemize}
 
 \end{frame}
 
 \hypertarget{probability}{%
 \subsection{Probability}\label{probability}}
+
+\begin{frame}{Vocabulary}
+\protect\hypertarget{vocabulary}{}
+
+\begin{center}
+Marginal $$P(X)$$
+
+Joint $$P(X,Y)$$
+
+Conditional $$P(X \vert Y)$$
+\end{center}
+
+\end{frame}
 
 \begin{frame}{Probability}
 \protect\hypertarget{probability-1}{}
@@ -180,17 +175,168 @@ Sum Rule
 
 Product/Chain Rule
 
-\[P(X,Y) = P(Y|X)P(X)\]
+\[P(X,Y) = P(Y|X)P(X) \overset{or}{=} P(X|Y)P(Y)\]
 
 \end{frame}
 
 \begin{frame}{Probability}
 \protect\hypertarget{probability-2}{}
 
-We can recover some very powerful rules just from these. \newline Bayes'
-Rule
+We can recover some very powerful rules just from these. For example,
+Bayes' Rule
 
 \[P(Y|X) = \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y) }\]
+
+\end{frame}
+
+\begin{frame}{Naive Bayes}
+\protect\hypertarget{naive-bayes}{}
+
+Use Bayes' Theorem to compute \(P(\mbox{Is Red}|X,Y)\).
+
+\[P(\mbox{Is Red}|X,Y) \propto P(\mbox{Is Red})P(X,Y|\mbox{Is Red})\]
+
+\end{frame}
+
+\begin{frame}{Naive Bayes}
+\protect\hypertarget{naive-bayes-1}{}
+
+\[P(\mbox{Is Red}) = \mbox{The proportion of our sample which belongs to } \mbox{ Red} \]
+
+\[P(X,Y|\mbox{Is Red}) = \mbox{Distribution of data belonging to } \mbox{Red}\]
+
+\end{frame}
+
+\begin{frame}{The Naive Part}
+\protect\hypertarget{the-naive-part}{}
+
+The Naive Part of Naive Bayes
+
+\[P(X,Y|\mbox{Is Red}) = P(X \vert \mbox{Is Red})P(Y\vert \mbox{Is Red})\]
+
+\end{frame}
+
+\begin{frame}{All in All}
+\protect\hypertarget{all-in-all}{}
+
+\[P(\mbox{Is Red}|X,Y) = P(\mbox{Is Red})P(X \vert \mbox{Is Red})P(Y\vert\mbox{Is Red})\]
+
+Make another assumption that \(P(X \vert \mbox{Is Red})\) is normal.
+
+\end{frame}
+
+\begin{frame}{}
+\protect\hypertarget{section}{}
+
+\begin{center}\includegraphics{CSS_Presentation_files/figure-beamer/unnamed-chunk-3-1} \end{center}
+
+\end{frame}
+
+\begin{frame}{}
+\protect\hypertarget{section-1}{}
+
+\begin{center}\includegraphics{CSS_Presentation_files/figure-beamer/unnamed-chunk-4-1} \end{center}
+
+\end{frame}
+
+\hypertarget{quadratic-discriminant-analysis}{%
+\subsection{Quadratic Discriminant
+Analysis}\label{quadratic-discriminant-analysis}}
+
+\begin{frame}{Quadratic Discriminant Analysis}
+\protect\hypertarget{quadratic-discriminant-analysis-1}{}
+
+Naive Bayes ignores the covariance between data by assuming independence
+between covariates.
+
+Quadratic Discriminant Analysis will use some information about
+covariance to help make predictions. In order to fit these models, we
+need to understand
+
+\begin{itemize}
+\tightlist
+\item
+  Expectation in \(\mathbb{R}^n\)
+\item
+  Covariance Matrices
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Means and Covariance}
+\protect\hypertarget{means-and-covariance}{}
+
+\begin{itemize}
+\item
+  Expectations in multiple dimenions behave like expectations in a
+  single variable.
+\item
+  If \(X\) is an \(n\)-dimensional random variable with expectation
+  \(\boldsymbol{\mu}\), then
+\end{itemize}
+
+\[ E[X] =  \boldsymbol{\mu} = \begin{bmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n  \end{bmatrix} \approx \begin{bmatrix} \sum_k \dfrac{x_{1k}}{N}  \\ \vdots \\ \sum_k \dfrac{x_{nk}}{N} \end{bmatrix} \]
+
+\end{frame}
+
+\begin{frame}{Means and Covariance}
+\protect\hypertarget{means-and-covariance-1}{}
+
+\begin{itemize}
+\tightlist
+\item
+  If \(X\) is an \(n\)-dimensional random variable with covariance
+  matrix \(\Sigma\), then
+\end{itemize}
+
+\[\Sigma_{ij} = \operatorname{Cov}(X_i,X_j) \].
+
+\begin{itemize}
+\tightlist
+\item
+  This implies \(\Sigma^T = \Sigma\) since the covariance is a symmetric
+  operator.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Back To Quadratic Discriminant Analysis}
+\protect\hypertarget{back-to-quadratic-discriminant-analysis}{}
+
+\begin{itemize}
+\item
+  Assume that
+  \(X | C_k \sim \mathcal{N}(\boldsymbol{\mu}_k, \Sigma_k)\). That is,
+  assume that the two classes have different covariance and different
+  means.
+\item
+  Compute \(P(C = C_k | X)\) using Baye's rule.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{}
+\protect\hypertarget{section-2}{}
+
+\begin{center}\includegraphics{CSS_Presentation_files/figure-beamer/unnamed-chunk-5-1} \end{center}
+
+\end{frame}
+
+\begin{frame}{}
+\protect\hypertarget{section-3}{}
+
+\begin{center}\includegraphics{CSS_Presentation_files/figure-beamer/unnamed-chunk-6-1} \end{center}
+
+\end{frame}
+
+\begin{frame}{What Have We Seen?}
+\protect\hypertarget{what-have-we-seen}{}
+
+\begin{itemize}
+\tightlist
+\item
+  A little statistics can get you very far.
+\end{itemize}
 
 \end{frame}
 

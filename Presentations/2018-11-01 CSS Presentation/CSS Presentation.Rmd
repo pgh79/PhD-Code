@@ -25,51 +25,94 @@ knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
                       message = FALSE,
                       results = 'hide',
-                      fig.width=4, 
-                      fig.height=3, 
-                      out.width="4in", 
-                      out.height="3in",
+                      fig.width=5, 
+                      fig.height=8, 
                       fig.align = 'center',
                       size = 'tiny')
 
 ```
 
+## Introduction
 
-## Intro
-### A First Approximation For The Difference Between ML and SL
+### I Have A Problem
 
-* Some algorithms are built off of statistical concepts.
+```{r}
+library(MASS)
+library(tidyverse)
+library(magrittr)
+library(caret)
+theme_set(theme_minimal())
 
-* Others seem ad hoc, with no immediate relationship to a statistical theory
+set.seed(0)
+c1 = MASS::mvrnorm(300, 
+                   mu = c(0,2), 
+                   Sigma  = matrix(c(1,0.2,0.2,1), nrow = 2)
+                   ) %>% 
+     as.data.frame() %>% 
+     mutate(c = 1)
 
-* I would call the former *statistical learning algorithms* and the latter *machine learning algorithms*.
-
-### A First Approximation For The Difference Between ML and SL
-
-The name "machine learning" is an unfortunate name.  The machine "learns" the neccesary associations in both types of learning.
-
-### A First Approximation For The Difference Between ML and SL
-
-E.g.
-* Generalized Linear Models are Statistical Learning
-* Neural Nets are Machine Learning
-
-### Goals
-
-* Be able to understand what the chosen algorithm does
-* Be able to explain it in laymen's/sophmoric terminology
+c2 = MASS::mvrnorm(200, 
+                   mu = c(2,0), 
+                   Sigma  = matrix(c(1,-0.5,-0.5,1), nrow = 2)
+                   ) %>% 
+     as.data.frame() %>% 
+     mutate(c = 2)
 
 
-### Will Require an Understanding of The Following
+c1 %>% 
+  bind_rows(c2) %>% 
+  mutate(c = factor(c)) -> example
 
-* Manipulation of Probabilities
+ex.plot = example %>% 
+  ggplot(aes(V1,V2))+
+  geom_point(aes(fill = c),type = 'norm', color = 'black', shape = 21, size = 2)+
+  scale_fill_brewer(palette = 'Set1')+
+  theme(aspect.ratio = 1/2)+
+  labs(x = 'X',y = 'Y')+
+  theme(legend.position = 'None')
 
-* Expectations and Covariance
+ex.plot
 
-* The Very Basics of Likelihood Theory
+```
+
+### I Have a Problem
+
+```{r}
+ex.plot+
+  geom_point(data = data.frame(x = 1, y = 1),aes(x = x,y = y), shape = 21, fill = 'black', size = 4)
+```
+
+### How Can I Solve It?
+
+
+* We can do this in a variety of ways.
+
+* Some are very statistical.  Some are very complicated.
+
+* Some are in the middle.  I'll call those *statistical learning algorithms*.
+
+
+### Statistical Decision Theory
+
+* The "Theorectically Optimal" way to do this would require knowing $P( \mbox{Is Red} \vert X,Y)$.
+
+* Maybe approximating this conditional distribution will be enough.
+
+* But first, a little vocabularty
+
+
 
 
 ## Probability
+
+### Vocabulary
+\begin{center}
+Marginal $$P(X)$$
+
+Joint $$P(X,Y)$$
+
+Conditional $$P(X \vert Y)$$
+\end{center}
 ### Probability
 
 Sum Rule
@@ -78,7 +121,7 @@ $$P(X) = \sum_Y P(X,Y)$$
 
 Product/Chain Rule
 
-$$P(X,Y) = P(Y|X)P(X)$$
+$$P(X,Y) = P(Y|X)P(X) \overset{or}{=} P(X|Y)P(Y)$$
 
 
 ### Probability
@@ -87,7 +130,167 @@ We can recover some very powerful rules just from these.  For example, Bayes' Ru
 $$P(Y|X) = \dfrac{P(X|Y)P(Y)}{\displaystyle{\sum_Y} P(X|Y)P(Y) }$$
 
 
-## Expectation and Covariance
 
-* We're all familliar with expectations and variance for single variable distributions.
-* Now, generalize to larger distributions.
+
+### Naive Bayes
+
+Use Bayes' Theorem to compute $P(\mbox{Is Red}|X,Y)$.
+
+$$P(\mbox{Is Red}|X,Y) \propto P(\mbox{Is Red})P(X,Y|\mbox{Is Red})$$
+
+### Naive Bayes
+
+$$P(\mbox{Is Red}) = \mbox{The proportion of our sample which belongs to } \mbox{ Red} $$
+
+$$P(X,Y|\mbox{Is Red}) = \mbox{Distribution of data belonging to } \mbox{Red}$$
+
+
+### The Naive Part
+
+The Naive Part of Naive Bayes
+
+$$P(X,Y|\mbox{Is Red}) \propto P(X \vert \mbox{Is Red})P(Y\vert \mbox{Is Red})$$
+
+
+### All in All
+
+$$P(\mbox{Is Red}|X,Y) = P(\mbox{Is Red})P(X \vert \mbox{Is Red})P(Y\vert\mbox{Is Red})$$
+
+Make another assumption that $P(X \vert \mbox{Is Red})$ is normal.
+
+###
+
+```{r}
+
+
+
+NB <- function(V1,V2){
+  
+  ##CLass 1 prob 
+  
+  c1p = dnorm(V1,0.03916033	,0.9733642	)*dnorm(V2,1.98373581	,0.992812)
+  c2p = dnorm(V1,2.01066434	,0.9321020	)*dnorm(V2,0.04441064,1.0325497)
+  
+  if(c1p>c2p){
+    return(1)
+  }else{
+    return(2)
+  }
+}
+
+space =crossing(V1 = seq(-3,5,length.out = 100),
+         V2 = seq(-3,5,length.out = 100)
+         ) %>% 
+  mutate(c = pmap_dbl(.,NB)) 
+
+
+
+
+
+ex.plot$layers <- c(geom_tile(data = space, aes(V1,V2,fill = factor(c)), alpha = 0.5 ), ex.plot$layers)
+ex.plot+
+  guides(fill = F)
+```
+
+###
+
+```{r, fig.height=3, fig.width=3}
+example %>% 
+  mutate(chat = pmap_dbl(list(V1,V2), NB)) %>% 
+  group_by(c,chat) %>% 
+  summarise(N = n()) %>% 
+  ggplot(aes(factor(c),factor(chat, levels = c(2,1)), fill = N, label = N))+
+  geom_tile()+
+  coord_equal()+
+  geom_text(size = 12, color = 'white')+
+  labs(x = 'True', y = 'Pred')+
+  scale_x_discrete(position = 'top')+
+  theme(axis.text = element_text(size= 18),
+        axis.title = element_text(size = 22),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        legend.position = 'None',)
+```
+
+## Quadratic Discriminant Analysis
+### Quadratic Discriminant Analysis
+
+Naive Bayes ignores the covariance between data by assuming independence between covariates.
+
+Quadratic Discriminant Analysis will use some information about covariance to help make predictions.  In order to fit these models, we need to understand
+
+* Expectation in $\mathbb{R}^n$
+* Covariance Matrices
+
+### Means and Covariance
+
+* Expectations in multiple dimenions behave like expectations in a single variable.
+
+* If $X$ is an $n$-dimensional random variable with expectation $\boldsymbol{\mu}$, then
+
+$$ E[X] =  \boldsymbol{\mu} = \begin{bmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n  \end{bmatrix} \approx \begin{bmatrix} \sum_k \dfrac{x_{1k}}{N}  \\ \vdots \\ \sum_k \dfrac{x_{nk}}{N} \end{bmatrix} $$
+
+### Means and Covariance
+
+* If $X$ is an $n$-dimensional random variable with covariance matrix $\Sigma$, then
+
+$$\Sigma_{ij} = \operatorname{Cov}(X_i,X_j) $$.
+
+* This implies $\Sigma^T = \Sigma$ since the covariance is a symmetric operator.
+
+
+### Back To Quadratic Discriminant Analysis
+
+* Assume that $X | C_k \sim \mathcal{N}(\boldsymbol{\mu}_k, \Sigma_k)$.  That is, assume that the two classes have different covariance and different means.
+
+* Compute $P(C = C_k | X)$ using Baye's rule.
+
+
+###
+
+```{r}
+model = train(c~V1+V2,
+              method = 'qda',
+              data = example)
+
+
+crossing(V1 = seq(-3,5,length.out = 100),
+         V2 = seq(-3,5,length.out = 100)
+         ) %>% 
+  mutate(c = predict(model,newdata = .)) %>% 
+  ggplot(aes(V1,V2, fill = c))+
+  geom_tile(alpha= 0.5)+
+  geom_point(data = example, aes(V1,V2, color = c), shape = 21, color = 'black', size = 2)+
+  theme(aspect.ratio = 1/2)+
+  scale_color_brewer(palette = 'Set1')+
+  scale_fill_brewer(palette = 'Set1')
+```
+
+
+
+
+###
+
+```{r,fig.height=3, fig.width=3}
+example %>% 
+  mutate(chat = predict(model, newdata = .)) %>% 
+  group_by(c,chat) %>% 
+  summarise(N = n()) %>% 
+  ggplot(aes(factor(c),factor(chat, levels = c(2,1)), fill = N, label = N))+
+  geom_tile()+
+  coord_equal()+
+  geom_text(size = 12, color = 'white')+
+  labs(x = 'True', y = 'Pred')+
+  scale_x_discrete(position = 'top')+
+  theme(axis.text = element_text(size= 18),
+        axis.title = element_text(size = 22),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        legend.position = 'None',)
+```
+
+
+### What Have We Seen?
+
+
+* A little statistics can get you very far.
