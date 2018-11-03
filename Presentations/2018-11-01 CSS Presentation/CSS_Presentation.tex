@@ -26,6 +26,7 @@
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 % use microtype if available
 \IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage{url}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
@@ -91,9 +92,9 @@ Medicine \& Dentistry \\
 
 
 \date[
-2018-10-31
+2018-11-01
 ]{
-		2018-10-31
+		2018-11-01
 			}
 
 
@@ -212,7 +213,7 @@ Use Bayes' Theorem to compute \(P(\mbox{Is Red}|X,Y)\).
 
 The Naive Part of Naive Bayes
 
-\[P(X,Y|\mbox{Is Red}) = P(X \vert \mbox{Is Red})P(Y\vert \mbox{Is Red})\]
+\[P(X,Y|\mbox{Is Red}) \propto P(X \vert \mbox{Is Red})P(Y\vert \mbox{Is Red})\]
 
 \end{frame}
 
@@ -337,6 +338,13 @@ need to understand
 \item
   A little statistics can get you very far.
 \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Code Available At}
+\protect\hypertarget{code-available-at}{}
+
+\url{https://github.com/Dpananos/PhD-Code}
 
 \end{frame}
 

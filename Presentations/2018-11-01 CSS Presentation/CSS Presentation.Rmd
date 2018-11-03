@@ -294,3 +294,7 @@ example %>%
 
 
 * A little statistics can get you very far.
+
+### Code Available At
+
+https://github.com/Dpananos/PhD-Code

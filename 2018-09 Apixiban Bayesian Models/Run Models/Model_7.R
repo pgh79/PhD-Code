@@ -2,7 +2,16 @@ library(tidyverse)
 library(magrittr)
 library(rstan)
 library(bayesplot)
+library(glue)
 source('2018-09 Apixiban Bayesian Models/stan_helpers.R')
+
+
+rm(list=ls())
+
+
+#----WhichModel----
+which.model = 'model_7_a'
+#------------------
 
 options(mc.cores = parallel::detectCores())
 
@@ -92,7 +101,7 @@ file.remove(file.name)
 
 
 #---- Fit Model ----
-model = '2018-09 Apixiban Bayesian Models/Models 1 Compartment/model_7_a.stan'
+model = glue('2018-09 Apixiban Bayesian Models/Models 1 Compartment/{which.model}.stan')
 fit = rstan::stan(file = model,
                   data = input_data,
                   chains=2,
@@ -146,7 +155,7 @@ simulations %>%
   scale_fill_brewer(palette = 'Set1')+
   labs(title = 'Bayesian Credible Interval', color = 'Data Source', fill = 'Data Source')
 
-ggsave('model_7_BCI.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_BCI.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 #----Posterior Predictive Interval----
 
@@ -193,7 +202,7 @@ simulations %>%
   scale_fill_brewer(palette = 'Set1')+
   labs(title = 'Posterior Predictive Interval', color = 'Data Source', fill = 'Data Source')
 
-ggsave('model_7_PPI.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_PPI.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 #----Draws From Posterior----
 
@@ -230,13 +239,13 @@ simulations %>%
     alpha=alpha
   )) +
   geom_line()+
-  facet_wrap(~Subject) +
+  facet_wrap(~Subject, scale = 'free_y') +
   scale_color_brewer(palette = 'Set1')+
   theme(legend.position = 'bottom')+
   scale_alpha_identity()+
   labs(title = 'Posterior Draws', color = 'Data Source', fill = 'Data Source')
 
-ggsave('model_7_DFP.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_DFP.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 # ---- Pred vs Data ----
 
@@ -273,12 +282,12 @@ simulations %>%
   ggplot(aes(Simulation, Data - Simulation))+
   geom_point()+
   geom_smooth()+
-  stat_function(fun = function(x) qnorm(0.975,0,(x/0.3833)^(0.66)*0.11), color = 'red')+
-  stat_function(fun = function(x) qnorm(0.025,0,(x/0.3833)^(0.66)*0.11), color = 'red')+
-  geom_hline(aes(yintercept = 0), color = 'red')
+  #stat_function(fun = function(x) qnorm(0.975,0,(x/0.3833)^(0.66)*0.11), color = 'red')+
+  #stat_function(fun = function(x) qnorm(0.025,0,(x/0.3833)^(0.66)*0.11), color = 'red')+
+  geom_hline(aes(yintercept = 0), color = 'black')
   theme(aspect.ratio = 1)
 
-ggsave('model_7_PVD.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_PVD.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
   
 #---- err ----
 
@@ -313,4 +322,4 @@ simulations %>%
   geom_hline(aes(yintercept = 0))+
   facet_wrap( ~ Subject, scale = 'free_y')
 
-ggsave('model_7_err.pdf',path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_err.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
