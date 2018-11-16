@@ -7,7 +7,7 @@ library(corrplot)
 # source('2018-09 Apixiban Bayesian Models/stan_helpers.R')
 
 
-rm(list=ls())
+
 
 
 #----WhichModel----
@@ -23,7 +23,7 @@ apixaban.data = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperime
   arrange(Subject, Time) %>%
   filter(Time > 0) %>%
   mutate(Concentration_orig = Concentration,
-         Concentration = 10e-3 * Concentration_orig) #resalced from ng/ml to mg/L
+         Concentration = 0.001* Concentration_orig) #resalced from ng/ml to mg/L
 
 apixaban.plot = apixaban.data %>%
   ggplot(aes(Time, Concentration)) +
@@ -31,6 +31,18 @@ apixaban.plot = apixaban.data %>%
   facet_wrap( ~ Subject) +
   scale_color_brewer(palette = 'Set1') +
   theme(legend.position = 'bottom')
+
+
+
+f.plot = apixaban.data %>% 
+  ggplot(aes(Time,Concentration, color = Group))+
+  stat_summary(geom = 'pointrange',fun.data = function(x) mean_se(x,1.96))+
+  stat_summary(geom = 'line',fun.y = 'mean')+
+  facet_wrap(~Sex)+
+  scale_color_brewer(palette = 'Set1')+
+  theme(aspect.ratio = 1)
+
+  ggsave('apixaban_viz.png', path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 
 #---- Prepare Data ----#
@@ -105,10 +117,11 @@ file.remove(file.name)
 model = glue('2018-09 Apixiban Bayesian Models/Models 1 Compartment/{which.model}.stan')
 fit = rstan::stan(file = model,
                   data = input_data,
-                  chains=2,
-                  control=list(adapt_delta=0.9))
+                  chains=2)
 
 params = rstan::extract(fit)
+
+
 #---- plots ----
 
 #----Bayesian Credible Intervals ----
@@ -154,9 +167,11 @@ bci<-simulations %>%
   facet_wrap(~ Subject, scale = 'free_y') +
   scale_color_brewer(palette = 'Set1')+
   scale_fill_brewer(palette = 'Set1')+
-  labs(title = 'Bayesian Credible Interval', color = 'Data Source', fill = 'Data Source')
+  labs(title = 'Bayesian Credible Interval', color = 'Data Source', fill = 'Data Source')+
+  theme(legend.position = 'None')
 
-ggsave(glue('{which.model}_BCI.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_BCI.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 #----Posterior Predictive Interval----
 
@@ -201,9 +216,10 @@ ppi<-simulations %>%
   facet_wrap(~ Subject, scale = 'free_y') +
   scale_color_brewer(palette = 'Set1')+
   scale_fill_brewer(palette = 'Set1')+
-  labs(title = 'Posterior Predictive Interval', color = 'Data Source', fill = 'Data Source')
+  labs(title = 'Posterior Predictive Interval', color = 'Data Source', fill = 'Data Source')+
+  theme(legend.position = 'None')
 
-ggsave(glue('{which.model}_PPI.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_PPI.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 #----Draws From Posterior----
 
@@ -244,9 +260,10 @@ dfp<-simulations %>%
   scale_color_brewer(palette = 'Set1')+
   theme(legend.position = 'bottom')+
   scale_alpha_identity()+
-  labs(title = 'Posterior Draws', color = 'Data Source', fill = 'Data Source')
+  labs(title = 'Posterior Draws', color = 'Data Source', fill = 'Data Source')+
+  theme(legend.position = 'None')
 
-ggsave(glue('{which.model}_DFP.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_DFP.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 # ---- Pred vs Data ----
 
@@ -288,7 +305,7 @@ pvd<-simulations %>%
   geom_hline(aes(yintercept = 0), color = 'black')
   theme(aspect.ratio = 1)
 
-ggsave(glue('{which.model}_PVD.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_PVD.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
   
 #---- err ----
 
@@ -323,9 +340,28 @@ err<-simulations %>%
   geom_hline(aes(yintercept = 0))+
   facet_wrap( ~ Subject, scale = 'free_y') 
 
-ggsave(glue('{which.model}_err.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
 
+
+ggsave(glue('{which.model}_err.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
 
 
 #----
 
+
+y = apply(params$C, c(2,3), mean) 
+dimnames(y)<- list(Subject = subject_names, Time = times)
+dimnames(C_hat)<-list(Subject = subject_names, Time = times)
+res = C_hat - y
+
+(res)%>% 
+  as.data.frame.table(stringsAsFactors = F,responseName = 'err') %>% 
+  mutate(Time = as.numeric(Time), Subject = as.numeric(Subject)) %>% 
+  left_join(apixaban.data) %>% 
+  ggplot(aes(Time,err, group = Subject))+
+  geom_line()+
+  geom_hline(aes(yintercept = 0))+
+  facet_grid(Sex~Group, scales = 'free_y')
+
+ggsave(glue('{which.model}_err_group.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+
+ 
