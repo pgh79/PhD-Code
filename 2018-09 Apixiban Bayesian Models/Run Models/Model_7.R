@@ -3,7 +3,8 @@ library(magrittr)
 library(rstan)
 library(bayesplot)
 library(glue)
-source('2018-09 Apixiban Bayesian Models/stan_helpers.R')
+library(corrplot)
+# source('2018-09 Apixiban Bayesian Models/stan_helpers.R')
 
 
 rm(list=ls())
@@ -135,7 +136,7 @@ simulations = y %>%
     Kind = if_else(Round > N, 'Data', 'Simulation')
   )
 
-simulations %>%
+bci<-simulations %>%
   group_by(Time,Subject,Kind) %>% 
   summarise(C = median(Concentration), 
             ymin = quantile(Concentration, 0.025),
@@ -182,7 +183,7 @@ simulations = y %>%
     Kind = if_else(Round > N, 'Data', 'Simulation')
   )
 
-simulations %>%
+ppi<-simulations %>%
   group_by(Time,Subject,Kind) %>% 
   summarise(C = median(Concentration), 
             ymin = quantile(Concentration, 0.025),
@@ -228,7 +229,7 @@ simulations = y %>%
     Kind = if_else(Round > N, 'Data', 'Simulation')
   )
 
-simulations %>%
+dfp<-simulations %>%
   mutate(alpha = if_else(Kind=='Data',1,0.5)) %>% 
   filter(Round %in% sample(1:N,size = 5)|Round==N+1) %>% 
   ggplot(aes(
@@ -275,7 +276,7 @@ simulations = y %>%
 
 
 
-simulations %>% 
+pvd<-simulations %>% 
   group_by(Time,Subject,Kind) %>%  
   summarise(C = mean(Concentration)) %>% 
   spread(Kind,C) %>% 
@@ -311,7 +312,7 @@ bind_rows(apixaban.data %>% select(Time, Concentration, Subject)) %>%
 mutate(Round = replace_na(Round, N + 1),
        Kind = if_else(Round > N, 'Data', 'Simulation'))
 
-simulations %>%
+err<-simulations %>%
   group_by(Time, Subject, Kind) %>%
   summarise(Concentration = mean(Concentration)) %>%
   spread(Kind, Concentration) %>%
@@ -320,6 +321,11 @@ simulations %>%
   ggplot(aes(Time, err)) +
   geom_line() +
   geom_hline(aes(yintercept = 0))+
-  facet_wrap( ~ Subject, scale = 'free_y')
+  facet_wrap( ~ Subject, scale = 'free_y') 
 
 ggsave(glue('{which.model}_err.pdf'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+
+
+
+#----
+

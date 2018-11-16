@@ -1,6 +1,0 @@
-"0","# model.data = list(t0 = t0, C0 = C0, D = D, V = V, times = times, N_t = N_t, C_hat = C_hat)"
-"0","# fit <- rstan::sampling(drug.model, data =model.data)"
-"0","# saveRDS(fit,'model_fit.RDS')"
-"0",""
-"0","#Already fit the model and sampled posterior."
-"0","fit<-readRDS('model_fit.RDS')"

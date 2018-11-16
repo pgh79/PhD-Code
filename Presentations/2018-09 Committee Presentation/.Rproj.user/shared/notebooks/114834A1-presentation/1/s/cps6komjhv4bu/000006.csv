@@ -1,2 +1,0 @@
-"0",""
-"0","hist(params$k_a, main="""", xlab=""k_a 1/day"", col=c_dark, border=c_dark_highlight)"
