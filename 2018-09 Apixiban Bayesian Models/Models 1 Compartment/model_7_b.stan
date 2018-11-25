@@ -26,7 +26,11 @@ data {
 parameters {
  
  // phi = log(k_a);
+<<<<<<< HEAD
  real<lower=0> ka;
+=======
+ real phi;
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
  
  //psi_1 = log(V);
  vector[4] BETA_psi_1;
@@ -37,7 +41,11 @@ parameters {
  //CL = V*k
  vector[4] BETA_psi_2;
  real<lower=0> SIGMA_psi_2;
+<<<<<<< HEAD
  real<lower=psi_1> psi_2[N_patients];
+=======
+ real psi_2[N_patients];
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
  
  real<lower=0, upper=1> alpha;
  real<lower=0> SIGMA_y;
@@ -54,11 +62,19 @@ transformed parameters {
   
   real<lower=0> k[N_patients];
   real<lower=0> V[N_patients];
+<<<<<<< HEAD
+=======
+  real<lower=0> ka;
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
   
   MU_psi_1 = X*BETA_psi_1;
   MU_psi_2 = X*BETA_psi_2;
   
+<<<<<<< HEAD
   
+=======
+  ka = phi;
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
   for (n in 1:N_patients) {
     V[n] = exp(psi_1[n]);
     k[n] = exp(psi_2[n] - psi_1[n]);
@@ -68,6 +84,7 @@ transformed parameters {
 }
 
 model {
+<<<<<<< HEAD
   // 
   // BETA_phi ~ normal(0,2);
   // SIGMA_phi ~ cauchy(0,1);
@@ -78,11 +95,24 @@ model {
   BETA_psi_1 ~ normal(0,2);
   SIGMA_psi_1 ~ cauchy(0,1);
   psi_1 ~student_t(10,MU_psi_1, SIGMA_psi_1);
+=======
+
+  
+  phi ~ lognormal(0,1);
+  
+  BETA_psi_1 ~ normal(0,2);
+  SIGMA_psi_1 ~ cauchy(0,1);
+  psi_1 ~student_t(7,MU_psi_1, SIGMA_psi_1);
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
   
   
   BETA_psi_2 ~ normal(0,2);
   SIGMA_psi_2 ~ cauchy(0,1);
+<<<<<<< HEAD
   psi_2 ~student_t(10,MU_psi_2, SIGMA_psi_2);
+=======
+  psi_2 ~student_t(7,MU_psi_2, SIGMA_psi_2);
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
   
   SIGMA_y ~ cauchy(0,1);
   alpha ~ uniform(0,1);
