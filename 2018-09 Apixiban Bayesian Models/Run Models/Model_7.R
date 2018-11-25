@@ -11,7 +11,7 @@ library(corrplot)
 
 
 #----WhichModel----
-which.model = 'model_7_a'
+which.model = 'model_7_b'
 #------------------
 
 options(mc.cores = parallel::detectCores())
@@ -151,7 +151,10 @@ simulations = y %>%
 
 bci<-simulations %>%
   left_join(apixaban.data %>% select(Subject,Sex,Group)) %>% 
+<<<<<<< HEAD
+=======
   filter(Group == 'NAFLD', Sex == "Female") %>% 
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
   group_by(Time,Subject,Kind) %>% 
   summarise(C = median(Concentration), 
             ymin = quantile(Concentration, 0.025),
@@ -378,6 +381,53 @@ params$V%>%
   facet_grid(Group~Sex)+
   labs(x = 'V (Litres)')+
   theme_bw()
+<<<<<<< HEAD
+
+
+ggsave(glue('{which.model}_V.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
+
+
+params$k%>% 
+  apply(2,mean) %>% 
+  as.table() %>% 
+  `dimnames<-`(list(Subject = subject_names)) %>% 
+  as.data.frame.table(responseName = 'V', stringsAsFactors = F) %>% 
+  mutate(Subject = as.numeric(Subject)) %>% 
+  left_join(apixaban.data %>% select(Subject,Group,Sex) %>% distinct) %>% 
+  ggplot(aes(V))+
+  geom_histogram(color = 'white')+
+  facet_grid(Group~Sex)+
+  labs(x = expression(paste(k,' (mg/L/Hour)')))+
+  theme_bw()
+
+
+ggsave(glue('{which.model}_k.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
+
+
+params$k_a%>% 
+  apply(2,mean) %>% 
+  as.table() %>% 
+  `dimnames<-`(list(Subject = subject_names)) %>% 
+  as.data.frame.table(responseName = 'V', stringsAsFactors = F) %>% 
+  mutate(Subject = as.numeric(Subject)) %>% 
+  left_join(apixaban.data %>% select(Subject,Group,Sex) %>% distinct) %>% 
+  ggplot(aes(V))+
+  geom_histogram(color = 'white')+
+  facet_grid(Group~Sex)+
+  labs(x = expression(paste(k[a],' (mg/L/Hour)')))+
+  theme_bw()
+
+
+ggsave(glue('{which.model}_k_a.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
+
+
+=======
 
 
 ggsave(glue('{which.model}_V.png'),
@@ -432,3 +482,4 @@ group_by(Time, Subject, Kind) %>%
   left_join(apixaban.data) %>% 
   mutate(res = Concentration - Simulation) %>% 
   summarise(sqrt(mean(res^2)))
+>>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
