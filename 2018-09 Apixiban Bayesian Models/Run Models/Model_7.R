@@ -150,6 +150,8 @@ simulations = y %>%
   )
 
 bci<-simulations %>%
+  left_join(apixaban.data %>% select(Subject,Sex,Group)) %>% 
+  filter(Group == 'NAFLD', Sex == "Female") %>% 
   group_by(Time,Subject,Kind) %>% 
   summarise(C = median(Concentration), 
             ymin = quantile(Concentration, 0.025),
@@ -170,8 +172,12 @@ bci<-simulations %>%
   labs(title = 'Bayesian Credible Interval', color = 'Data Source', fill = 'Data Source')+
   theme(legend.position = 'None')
 
+bci
+
 ggsave(glue('{which.model}_BCI.png'),
-       path = '2018-09 Apixiban Bayesian Models/Figures/')
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi =400,
+        )
 
 #----Posterior Predictive Interval----
 
@@ -219,7 +225,9 @@ ppi<-simulations %>%
   labs(title = 'Posterior Predictive Interval', color = 'Data Source', fill = 'Data Source')+
   theme(legend.position = 'None')
 
-ggsave(glue('{which.model}_PPI.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_PPI.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
 
 #----Draws From Posterior----
 
@@ -252,8 +260,7 @@ dfp<-simulations %>%
     Time,
     Concentration,
     color = Kind,
-    group = Round,
-    alpha=alpha
+    group = Round
   )) +
   geom_line()+
   facet_wrap(~Subject, scale = 'free_y') +
@@ -263,7 +270,8 @@ dfp<-simulations %>%
   labs(title = 'Posterior Draws', color = 'Data Source', fill = 'Data Source')+
   theme(legend.position = 'None')
 
-ggsave(glue('{which.model}_DFP.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+ggsave(glue('{which.model}_DFP.png'),path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
 
 # ---- Pred vs Data ----
 
@@ -334,34 +342,93 @@ err<-simulations %>%
   summarise(Concentration = mean(Concentration)) %>%
   spread(Kind, Concentration) %>%
   ungroup %>% 
-  mutate(err = Data - Simulation) %>%
-  ggplot(aes(Time, err)) +
-  geom_line() +
-  geom_hline(aes(yintercept = 0))+
-  facet_wrap( ~ Subject, scale = 'free_y') 
-
-
-
-ggsave(glue('{which.model}_err.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
-
-
-#----
-
-
-y = apply(params$C, c(2,3), mean) 
-dimnames(y)<- list(Subject = subject_names, Time = times)
-dimnames(C_hat)<-list(Subject = subject_names, Time = times)
-res = C_hat - y
-
-(res)%>% 
-  as.data.frame.table(stringsAsFactors = F,responseName = 'err') %>% 
-  mutate(Time = as.numeric(Time), Subject = as.numeric(Subject)) %>% 
   left_join(apixaban.data) %>% 
-  ggplot(aes(Time,err, group = Subject))+
-  geom_line()+
+  mutate(err = Data - Simulation) %>%
+  ggplot(aes(factor(Time), err)) +
+  # geom_line(aes(group = Subject)) +
   geom_hline(aes(yintercept = 0))+
-  facet_grid(Sex~Group, scales = 'free_y')
+  geom_jitter(width = 0.2)+
+  stat_summary(geom = 'pointrange', 
+               fun.data = function(x) mean_se(x,1.96), 
+               color = 'red')+
+  facet_grid(Group~Sex)+
+  theme_bw()+
+  labs(x = 'Time', y = 'Actual - Predicted')
 
-ggsave(glue('{which.model}_err_group.png'),path = '2018-09 Apixiban Bayesian Models/Figures/')
+err
 
- 
+ggsave(glue('{which.model}_err.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
+
+
+
+
+#----Histograms----
+
+params$V%>% 
+  apply(2,mean) %>% 
+  as.table() %>% 
+  `dimnames<-`(list(Subject = subject_names)) %>% 
+  as.data.frame.table(responseName = 'V', stringsAsFactors = F) %>% 
+  mutate(Subject = as.numeric(Subject)) %>% 
+  left_join(apixaban.data %>% select(Subject,Group,Sex) %>% distinct) %>% 
+  ggplot(aes(V))+
+  geom_histogram(color = 'white')+
+  facet_grid(Group~Sex)+
+  labs(x = 'V (Litres)')+
+  theme_bw()
+
+
+ggsave(glue('{which.model}_V.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
+
+
+params$k%>% 
+  apply(2,mean) %>% 
+  as.table() %>% 
+  `dimnames<-`(list(Subject = subject_names)) %>% 
+  as.data.frame.table(responseName = 'V', stringsAsFactors = F) %>% 
+  mutate(Subject = as.numeric(Subject)) %>% 
+  left_join(apixaban.data %>% select(Subject,Group,Sex) %>% distinct) %>% 
+  ggplot(aes(V))+
+  geom_histogram(color = 'white')+
+  facet_grid(Group~Sex)+
+  labs(x = expression(paste(k,' (mg/L/Hour)')))+
+  theme_bw()
+
+
+ggsave(glue('{which.model}_k.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
+
+
+params$k_a%>% 
+  apply(2,mean) %>% 
+  as.table() %>% 
+  `dimnames<-`(list(Subject = subject_names)) %>% 
+  as.data.frame.table(responseName = 'V', stringsAsFactors = F) %>% 
+  mutate(Subject = as.numeric(Subject)) %>% 
+  left_join(apixaban.data %>% select(Subject,Group,Sex) %>% distinct) %>% 
+  ggplot(aes(V))+
+  geom_histogram(color = 'white')+
+  facet_grid(Group~Sex)+
+  labs(x = expression(paste(k[a],' (mg/L/Hour)')))+
+  theme_bw()
+
+
+ggsave(glue('{which.model}_k_a.png'),
+       path = '2018-09 Apixiban Bayesian Models/Figures/',
+       dpi = 400)
+
+
+#---
+simulations %>%
+group_by(Time, Subject, Kind) %>%
+  summarise(Concentration = mean(Concentration)) %>%
+  spread(Kind, Concentration) %>%
+  ungroup %>% 
+  left_join(apixaban.data) %>% 
+  mutate(res = Concentration - Simulation) %>% 
+  summarise(sqrt(mean(res^2)))
