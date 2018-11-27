@@ -47,7 +47,6 @@ parameters {
 transformed parameters {
 
   real C[N_patients, N_t];
-  real C_pred[N_patients,N_ut];
   real<lower=0> k_a[N_patients];
   real<lower=0> k[N_patients];
   real<lower=0> V[N_patients];
@@ -68,8 +67,7 @@ transformed parameters {
     
     for (t in 1:N_t)
       C[n,t] = C_anal(times[t], D, V[n], k_a[n], k[n]);
-    for (t in 1:N_ut)
-      C_pred[n,t] = C_anal(utimes[t], D, V[n], k_a[n], k[n]);
+
   }
 }
 

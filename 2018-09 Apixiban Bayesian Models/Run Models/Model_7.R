@@ -11,7 +11,7 @@ library(corrplot)
 
 
 #----WhichModel----
-which.model = 'model_7_b'
+which.model = 'model_7_a'
 #------------------
 
 options(mc.cores = parallel::detectCores())
@@ -52,7 +52,9 @@ t0 = 0
 C0 = array(c(0), dim = 1)
 
 D = 2.5
-times = sort(unique(apixaban.data$Time))
+delay = 0.25
+times = sort(unique(apixaban.data$Time)) - delay
+
 
 subject_names = apixaban.data$Subject %>% unique
 subjects = apixaban.data$Subject %>%
@@ -121,6 +123,7 @@ fit = rstan::stan(file = model,
 
 params = rstan::extract(fit)
 
+times = times + delay
 
 #---- plots ----
 
@@ -151,10 +154,6 @@ simulations = y %>%
 
 bci<-simulations %>%
   left_join(apixaban.data %>% select(Subject,Sex,Group)) %>% 
-<<<<<<< HEAD
-=======
-  filter(Group == 'NAFLD', Sex == "Female") %>% 
->>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
   group_by(Time,Subject,Kind) %>% 
   summarise(C = median(Concentration), 
             ymin = quantile(Concentration, 0.025),
@@ -342,7 +341,7 @@ mutate(Round = replace_na(Round, N + 1),
 
 err<-simulations %>%
   group_by(Time, Subject, Kind) %>%
-  summarise(Concentration = mean(Concentration)) %>%
+  summarise(Concentration = mean(Concentration)) %>% 
   spread(Kind, Concentration) %>%
   ungroup %>% 
   left_join(apixaban.data) %>% 
@@ -381,7 +380,7 @@ params$V%>%
   facet_grid(Group~Sex)+
   labs(x = 'V (Litres)')+
   theme_bw()
-<<<<<<< HEAD
+
 
 
 ggsave(glue('{which.model}_V.png'),
@@ -427,7 +426,7 @@ ggsave(glue('{which.model}_k_a.png'),
        dpi = 400)
 
 
-=======
+
 
 
 ggsave(glue('{which.model}_V.png'),
@@ -482,4 +481,4 @@ group_by(Time, Subject, Kind) %>%
   left_join(apixaban.data) %>% 
   mutate(res = Concentration - Simulation) %>% 
   summarise(sqrt(mean(res^2)))
->>>>>>> f21a23f9e02e9a38369c560bd798488a68cee9f3
+
