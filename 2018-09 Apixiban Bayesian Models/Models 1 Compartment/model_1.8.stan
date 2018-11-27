@@ -1,3 +1,5 @@
+// Same as model 1.7 except with a normal likelihood
+
 functions {
   real C_anal(real t, real D, real V, real k_a, real k) {
     return (D / V) * (k_a / (k_a - k))

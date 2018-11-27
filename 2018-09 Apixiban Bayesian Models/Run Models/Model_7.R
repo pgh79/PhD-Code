@@ -52,7 +52,7 @@ t0 = 0
 C0 = array(c(0), dim = 1)
 
 D = 2.5
-delay = 0.25
+delay = 1/3
 times = sort(unique(apixaban.data$Time)) - delay
 
 
