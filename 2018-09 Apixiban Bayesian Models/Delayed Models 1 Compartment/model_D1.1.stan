@@ -1,48 +1,42 @@
-//============
-// MODEL 1.9 ||
-//============
+// Same as model 1.7 except with a normal likelihood
 
-
-// This model will contain more covariates than model_7_a.
-// In particular, we add the effect of age and weight.
 functions {
-  
-  //Pharmacokinetic function
   real C_anal(real t, real D, real V, real k_a, real k) {
     return (D / V) * (k_a / (k_a - k))
             * ( exp(- k * t) - exp(-k_a * t) );
   }
 }
 data {
-  real t0;    // Initial time in days;
-  real C0[1]; // Initial concentration at t0 in mg/L
-
   real D;   // Total dosage in mg
 
   int<lower=1> N_t;
   real times[N_t];   // Measurement times in days
+
   
-  real<lower=0> A; // Median concentration.  Allows noise for likelihood to be interpreted as noise for a "typical measurement" -- Gelman BDA chapter 19
+  real<lower=0> A;
+  
+  int<lower=1>p;
+
 
   // Measured concentrations in effect compartment in mg/L
   int<lower=1> N_patients;
   real C_hat[N_patients, N_t];
-  matrix[N_patients,4] X;
+  matrix[N_patients,p] X;
 }
 parameters {
   
   //Volume
-  vector[4] BETA_V;
+  vector[p] BETA_V;
   real<lower=0> SIGMA_V;
   real z_V[N_patients];
   
   //Elimination Rate
-  vector[4] BETA_K;
+  vector[p] BETA_K;
   real<lower=0> SIGMA_K;
   real z_k[N_patients];
   
   //Absorption
-  vector[4] BETA_KA;
+  vector[p] BETA_KA;
   real<lower=0> SIGMA_KA;
   real z_ka[N_patients];
   

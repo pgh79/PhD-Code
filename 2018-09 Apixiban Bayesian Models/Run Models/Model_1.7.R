@@ -52,7 +52,7 @@ t0 = 0
 C0 = array(c(0), dim = 1)
 
 D = 2.5
-delay = 1/3
+delay = 0
 times = sort(unique(apixaban.data$Time)) - delay
 
 
@@ -79,18 +79,23 @@ N_ut = 50
 
 utimes = seq(min(times), max(times), length.out = N_ut)
 
-X = apixaban.data %>%
-  mutate(Intercept = 1) %>%
-  distinct(Subject, Intercept, Sex, Group) %>%
-  mutate(
-    Sex = Sex %>% factor %>% as.numeric - 1,
-    Group = Group %>% factor %>% as.numeric - 1,
-    ITXN = Sex * Group
-  ) %>%
-  select(-Subject) %>%
-  as.matrix
+# X = apixaban.data %>%
+#   mutate(Intercept = 1) %>%
+#   distinct(Subject, Intercept, Sex, Group) %>%
+#   mutate(
+#     Sex = Sex %>% factor %>% as.numeric - 1,
+#     Group = Group %>% factor %>% as.numeric - 1,
+#     ITXN = Sex * Group
+#   ) %>%
+#   select(-Subject) %>%
+#   as.matrix
+#
+#X = X[, c('Intercept', 'Sex', 'Group', 'ITXN')]
 
-X = X[, c('Intercept', 'Sex', 'Group', 'ITXN')]
+X= apixaban.data %>% 
+   distinct(Subject,Sex,Group) %>% 
+   model.matrix(~Sex*Group, data = .)
+
 
 
 file.name = "2018-09 Apixiban Bayesian Models/Data/model_data.data.R"
@@ -119,7 +124,7 @@ file.remove(file.name)
 model = glue('2018-09 Apixiban Bayesian Models/Models 1 Compartment/{which.model}.stan')
 fit = rstan::stan(file = model,
                   data = input_data,
-                  chains=2)
+                  chains=4)
 
 params = rstan::extract(fit)
 
