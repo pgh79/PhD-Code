@@ -1,5 +1,6 @@
 // Model with delay in absoprtion
 // Time delay suggested by Rommel
+// Log-normal likeloihood
 // Author: Demetri Pananos
 
 functions {
@@ -115,16 +116,15 @@ model {
   lambda ~ pareto(0.1, 1.5);
   delay ~ beta(lambda * phi, lambda * (1 - phi));
 
-
   // Likelihood
   for (n in 1:N_patients)
     for (t in 1:N_t)
-      C_hat[n, t] ~ normal(C[n, t], pow(C[n,t]/A,2*alpha)*sigma);
+      C_hat[n, t] ~ lognormal(log(C[n, t]), sigma);
 }
 
 generated quantities {
   real C_ppc[N_patients, N_t];
   for (n in 1:N_patients)
     for (t in 1:N_t)
-      C_ppc[n, t] = normal_rng(C[n, t], pow(C[n,t]/A,2*alpha)*sigma);
+      C_ppc[n, t] = lognormal_rng(log(C[n, t]), sigma );
 }
