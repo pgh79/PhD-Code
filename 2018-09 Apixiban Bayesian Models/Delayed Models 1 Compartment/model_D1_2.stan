@@ -1,6 +1,6 @@
 // Model with delay in absoprtion
 // Time delay suggested by Rommel
-// Log-normal likeloihood
+// Log-normal likelihood
 // Author: Demetri Pananos
 
 functions {
@@ -17,7 +17,8 @@ data {
   real D;   // Total dosage in mg
 
   int<lower=1> N_t; //Number of time points sampeld per patient
-  real times[N_t];   //Measurement times. Same for all patients.  Measured in hours post dose.
+  real times[N_t];   //Measurement times. 
+                     //Same for all patients.  Measured in hours post dose.
 
   real<lower=0> A; // Median observed concentration.
                    // To be used in the variance of likelihood
@@ -27,12 +28,18 @@ data {
   int<lower=1>N_covariates;
   int<lower=1> N_patients;
   real C_hat[N_patients, N_t]; //Observed concentration.  
-                              //  Originally in ng/ml.  Convert to mg/L bc Dose is in mg.
+                              //  Originally in ng/ml.  
+                              //Convert to mg/L bc Dose is in mg.
   
   
   
   matrix[N_patients,N_covariates] X; //Design matrix for patients
-                                     // Covariates include Age, Weight, Creatinine, Sex (binary), Disease (binary)
+                                     // Covariates include 
+                                     //Age, 
+                                     //Weight, 
+                                     //Creatinine, 
+                                     //Sex (binary), 
+                                     //Disease (binary)
 }
 parameters {
   
@@ -55,9 +62,16 @@ parameters {
   real<lower=0, upper=1> alpha;
   
   //ADDED: Delay effects
+  //See "Modeling of delays in PKPD: classical approaches and 
+  //a tutorial for delay differential equations" -- Koch G., et. al
+  //From a ODE model, we can cook up a delay.
+  //Delay, in this context, is an estimate of the mean transit time.
+  //Hence, times are interpreted as times after absorption, 
+  //rather than times after administration
+  
   real<lower=0,upper=1> phi; //Use to measure population delay.
-  real<lower=0.1> lambda;
-  real<lower=0, upper=1> delay[N_patients]; //Each patient has their own unique delay
+  real<lower=10> lambda;
+  real<lower=0, upper=1> delay_raw[N_patients]; //Each patient has their own delay
 }
 
 transformed parameters {
@@ -70,51 +84,63 @@ transformed parameters {
   vector[N_patients] MU_KA;
   vector[N_patients] MU_K;
   vector[N_patients] MU_V;
-
+  
+  real delay[N_patients];
+  
   MU_KA = X*BETA_KA;
   MU_K = X*BETA_K;
   MU_V = X*BETA_V;
   
-  
   for (n in 1:N_patients) {
     
-    //I think this means that the PK parameters have lognormal distribution
+    //PK parameters have lognormal distribution
     k_a[n] = exp(MU_KA[n] + z_ka[n]*SIGMA_KA);
     k[n] = exp(MU_K[n] + z_k[n]*SIGMA_K);
     V[n] = exp(MU_V[n] + z_V[n]*SIGMA_V);
+    delay[n] = 0.5*delay_raw[n];
     
     for (t in 1:N_t)
-    //Our pharmacologist says that there can be a delay in the absorption of the drug
-    //So although the ODE model assumes the drug is instantaneously absorbed, this is def not the case.
-    //We posit that the drus is absorbed a little later than we think, which translates to an error in our time measurements
-    //TODO: Analyze a two compartment model to account for apparent differences in absorption times.
-      C[n,t] = PK_profile(times[t] - 0.5*delay[n], D, V[n], k_a[n], k[n]);
+      //Our pharmacologist says that there can be a delay 
+      //in the absorption of the drug
+      //So although the ODE model assumes the drug is instantaneously absorbed, 
+      //this is def not the case.
+      //We posit that the drus is absorbed a little later than we think, 
+      //which translates to an error in our time measurements
+      //Alternatively, that the times are times after absorption, 
+      //not times after administration.
+      
+      C[n,t] = PK_profile(times[t] - delay[n], D, V[n], k_a[n], k[n]);
 
   }
 }
 
 model {
-  // Priors
-
-  BETA_V ~ normal(0,1);
-  SIGMA_V ~ normal(0,1);
-  z_V ~ normal(0,1);
   
-  BETA_K ~ normal(0,1);
-  SIGMA_K ~ normal(0,1);;
-  z_k ~ normal(0,1);
-
+  // Priors
+  //Coefficients
+  BETA_V  ~ normal(0,1);
+  BETA_K  ~ normal(0,1);
   BETA_KA ~ normal(0,1);
-  SIGMA_KA ~ normal(0,1);
+  
+  //Noise
+  SIGMA_V ~ normal(0,1);
+  SIGMA_K ~ normal(0,1);
+  SIGMA_KA ~normal(0,1);
+  
+  //Random Effects
+  z_V ~ normal(0,1);
+  z_k ~ normal(0,1);
   z_ka ~ normal(0,1);
 
   sigma ~ normal(0,1);
-  alpha ~ uniform(0,1);
+  alpha ~ uniform(0,1); //See Gelman BDA, chapter 19.
   
   //ADDED: Delay
-  phi ~ beta(1, 1); // uniform on phi, could drop
-  lambda ~ pareto(0.1, 1.5);
-  delay ~ beta(lambda * phi, lambda * (1 - phi));
+  //These priors make more sense to me and
+  //result in posteriors which are not much different.
+  phi ~ beta(2.5, 2.5);
+  lambda ~ pareto(10, 1.5);
+  delay_raw ~ beta(lambda * phi, lambda * (1 - phi));
 
   // Likelihood
   for (n in 1:N_patients)

@@ -15,4 +15,4 @@ sims = stan(stan_program,
 params = extract(sims)
 
 
-hist(params$delay/2)
+hist(params$delay, breaks = 20,probability = T)

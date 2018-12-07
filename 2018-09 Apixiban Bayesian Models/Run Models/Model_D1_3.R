@@ -4,11 +4,10 @@ library(rstan)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 source('2018-09 Apixiban Bayesian Models/stan_utilities.R')
- 
 
 #Use model_D1.2 Lognormal likelihood. Seems to be better in terms of diagnostiscs
 ###########################
-which.model <- 'model_D1_2'#
+which.model <- 'model_D1_3'#
 ###########################
 
 apixaban.data = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentData.csv')
@@ -18,11 +17,11 @@ covariates = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentC
 
 #Join the covariates with a left join.
 apixaban.data = apixaban.data %>% 
-                mutate(Concentration_scaled = 0.001*Concentration) %>%  #conver to mg/L for stability
-                left_join(covariates) %>% 
-                arrange(Subject, Time) %>% 
-                filter(Time>0) %>% 
-                replace_na(list(Creatinine = mean(covariates$Creatinine,na.rm = T)))
+  mutate(Concentration_scaled = 0.001*Concentration) %>%  #conver to mg/L for stability
+  left_join(covariates) %>% 
+  arrange(Subject, Time) %>% 
+  filter(Time>0) %>% 
+  replace_na(list(Creatinine = mean(covariates$Creatinine,na.rm = T)))
 
 #---- Prepare Data ----
 
@@ -69,6 +68,16 @@ rstan::stan_rdump(c(
   'A'
 ),file = file.name)
 
+rstan::stan_rdump(c(
+  "D",
+  "times",
+  "N_t",
+  "N_patients",
+  "C_hat",
+  'N_covariates',
+  'X',
+  'A'
+), file=file.name)
 
 input_data <- read_rdump(file.name)
 
@@ -80,7 +89,7 @@ model = glue('2018-09 Apixiban Bayesian Models/Delayed Models 1 Compartment/{whi
 fit = rstan::stan(file = model,
                   data = input_data,
                   chains = 2,
-                  control = list(max_treedepth = 13,adapt_delta = 0.9),
+                  control = list(max_treedepth = 13,adapt_delta = 0.8),
                   seed=19920908)
 
 stan_rhat(fit)
