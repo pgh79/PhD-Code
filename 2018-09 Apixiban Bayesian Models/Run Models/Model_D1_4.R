@@ -4,11 +4,11 @@ library(bayesplot)
 library(rstan)
 options(mc.cores = parallel::detectCores())
 source('2018-09 Apixiban Bayesian Models/stan_utilities.R')
- 
+
 
 #Use model_D1.2 Lognormal likelihood. Seems to be better in terms of diagnostiscs
 ###########################
-which.model <- 'model_D1_2'#
+which.model <- 'model_D1_4'#
 ###########################
 
 apixaban.data = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentData.csv')
@@ -18,11 +18,11 @@ covariates = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentC
 
 #Join the covariates with a left join.
 apixaban.data = apixaban.data %>% 
-                mutate(Concentration_scaled = 0.001*Concentration) %>%  #conver to mg/L for stability
-                left_join(covariates) %>% 
-                arrange(Subject, Time) %>% 
-                filter(Time>0) %>% 
-                replace_na(list(Creatinine = mean(covariates$Creatinine,na.rm = T)))
+  mutate(Concentration_scaled = 0.001*Concentration) %>%  #conver to mg/L for stability
+  left_join(covariates) %>% 
+  arrange(Subject, Time) %>% 
+  filter(Time>0) %>% 
+  replace_na(list(Creatinine = mean(covariates$Creatinine,na.rm = T)))
 
 #---- Prepare Data ----
 
@@ -43,7 +43,6 @@ C_hat = apixaban.data %>%
   select(-Subject) %>%
   as.matrix
 
-A = median(C_hat)
 N_t = length(times)
 
 X= apixaban.data %>% 
@@ -53,6 +52,8 @@ X= apixaban.data %>%
          Creatinine = (Creatinine - mean(Creatinine))/sd(Creatinine)) %>% 
   model.matrix(~Sex*Group + Weight + Age+ Creatinine, data = .)
 
+
+X_v = X[,1:2]
 N_patients = dim(X)[1]
 N_covariates = dim(X)[2]
 
@@ -66,7 +67,7 @@ rstan::stan_rdump(c(
   "C_hat",
   'N_covariates',
   'X',
-  'A'
+  'X_v'
 ),file = file.name)
 
 input_data <- read_rdump(file.name)
@@ -78,12 +79,12 @@ file.remove(file.name)
 model = glue('2018-09 Apixiban Bayesian Models/Delayed Models 1 Compartment/{which.model}.stan')
 fit = rstan::stan(file = model,
                   data = input_data,
-                  chains = 2,
+                  chains = 4,
                   control = list(max_treedepth = 13,adapt_delta = 0.8)
-                  )
+)
 
 check_rhat(fit)
-mcmc_trace(as.matrix(fit), regex_pars = 'BETA_V')
+
 params = rstan::extract(fit)
 
 

@@ -2,7 +2,7 @@ library(tidyverse)
 library(magrittr)
 library(rstan)
 library(bayesplot)
-source('2018-09 Apixiban Bayesian Models/stan_helpers.R')
+source('2018-09 Apixiban Bayesian Models/stan_utilities.R')
 
 options(mc.cores = parallel::detectCores())
 
@@ -20,7 +20,6 @@ apixaban.plot = apixaban.data %>%
   geom_point()+
   facet_wrap(~Subject)
 
-apixaban.plot
 #---- Prepare Data ----#
 
 
@@ -56,13 +55,19 @@ rstan::stan_rdump(c("t0", "C0", "D", "times", "N_t", "N_patients", "C_hat", 'uti
 
 input_data <- read_rdump("2018-09 Apixiban Bayesian Models/Data/model_6_data.data.R")
 
-L = stan_fitter('model_6', input_data = input_data)
+file.remove("2018-09 Apixiban Bayesian Models/Data/model_6_data.data.R")
 
-params = L$params
-fit = L$fit
+fit = stan('2018-09 Apixiban Bayesian Models/Models 1 Compartment/model_1.6.stan',
+           data = input_data,
+           chains = 4)
+
+params = rstan::extract(fit)
+
+
+check_rhat(fit)
 
 #---- plots ---- 
-x = params$C_pred
+x = params$C
 
 conc = apply(x,c(2,3),median) %>%  
   as.table %>% 
@@ -91,7 +96,7 @@ apixaban.plot+
 
 
 mcmc_areas(as.matrix(fit),
-           regex_pars = c('MU'),
+           regex_pars = c('k'),
            prob = 0.95, # 80% intervals
            prob_outer = 0.99, # 99%
             )

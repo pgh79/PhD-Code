@@ -40,11 +40,13 @@ data {
                                      //Creatinine, 
                                      //Sex (binary), 
                                      //Disease (binary)
+                                     
+  matrix[N_patients,2] X_v;
 }
 parameters {
   
   //Volume
-  vector[N_covariates] BETA_V;
+  vector[2] BETA_V;
   real<lower=0> SIGMA_V;
   real z_V[N_patients];
   
@@ -88,7 +90,8 @@ transformed parameters {
   
   MU_KA = X*BETA_KA;
   MU_K = X*BETA_K;
-  MU_V = X*BETA_V;
+  
+  MU_V = X_v*BETA_V;
   
   for (n in 1:N_patients) {
     
