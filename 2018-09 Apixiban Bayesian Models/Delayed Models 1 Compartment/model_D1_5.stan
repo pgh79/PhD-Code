@@ -69,6 +69,11 @@ parameters {
   real<lower=0,upper=1> phi; //Use to measure population delay.
   real<lower=10> lambda;
   real<lower=0, upper=1> delay_raw[N_patients]; //Each patient has their own delay
+  
+  //Bioavailability;
+  real<lower=0,upper=1> phi_F; //Use to measure population delay.
+  real<lower=10> lambda_F;
+  real<lower=0, upper=1> F[N_patients];
 }
 
 transformed parameters {
@@ -84,6 +89,13 @@ transformed parameters {
   
   real delay[N_patients];
   
+  real alpha_F;
+  real beta_F;
+  real dose[N_patients];
+  
+  alpha_F = lambda_F * phi_F;
+  beta_F = lambda_F * (1 - phi_F);
+  
   MU_KA = X*BETA_KA;
   MU_K = X*BETA_K;
   
@@ -96,6 +108,8 @@ transformed parameters {
     k[n] = exp(MU_K[n] + z_k[n]*SIGMA_K);
     V[n] = exp(MU_V[n] + z_V[n]*SIGMA_V);
     delay[n] = 0.5*delay_raw[n];
+    dose[n] = D*F[n];
+
     
     for (t in 1:N_t)
       //Our pharmacologist says that there can be a delay 
@@ -107,7 +121,7 @@ transformed parameters {
       //Alternatively, that the times are times after absorption, 
       //not times after administration.
       
-      C[n,t] = PK_profile(times[t] - delay[n], D, V[n], k_a[n], k[n]);
+      C[n,t] = PK_profile(times[t] - delay[n], dose[n], V[n], k_a[n], k[n]);
 
   }
 }
@@ -137,6 +151,11 @@ model {
   phi ~ beta(2.5, 2.5);
   lambda ~ pareto(10, 1.5);
   delay_raw ~ beta(lambda * phi, lambda * (1 - phi));
+  
+  //ADDED: Bioavailability
+  phi_F ~ beta(2.5, 2.5);
+  lambda_F ~ pareto(10, 1.5);
+  F ~ beta(lambda_F * phi_F, lambda_F * (1 - phi_F));
 
   // Likelihood
   for (n in 1:N_patients)

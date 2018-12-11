@@ -53,7 +53,7 @@ X= apixaban.data %>%
   model.matrix(~Sex*Group + Weight + Age+ Creatinine, data = .)
 
 
-X_v = X[,1:2]
+X_v = X[,c(1,2,4)]
 N_patients = dim(X)[1]
 N_covariates = dim(X)[2]
 
@@ -79,7 +79,8 @@ file.remove(file.name)
 model = glue('2018-09 Apixiban Bayesian Models/Delayed Models 1 Compartment/{which.model}.stan')
 fit = rstan::stan(file = model,
                   data = input_data,
-                  chains = 4,
+                  chains = 10,
+                  seed = 10090908,
                   control = list(max_treedepth = 13,adapt_delta = 0.8)
 )
 
