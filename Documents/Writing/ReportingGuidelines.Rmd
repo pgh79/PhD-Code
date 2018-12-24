@@ -2,7 +2,10 @@
 title: "On Reporting the Results of a Statistical Analysis"
 author: "Demetri Pananos"
 date: ""
-output: pdf_document
+output: 
+  pdf_document:
+    latex_engine: xelatex
+mainfont: Helvetica
 ---
 
 ```{r setup, include=FALSE}
@@ -38,7 +41,8 @@ This class will have you answer questions of a similar calibre and of a similar 
 One possible answer is just to show your collaborator what you see.  Shown below is a summary of a linear regression in R.
 
 ```{r}
-model = lm(BMI ~ weight + gender, data = diabetes)
+fake_data = diabetes
+model = lm(BMI ~ weight + gender, data = fake_data)
 summary(model)
 ```
 
@@ -62,9 +66,9 @@ This answer means well, but falls short of effectively communicating the result.
 
 A really good answer should have, in my opinion, the following:
 
-1. The answer should succintly address the question being asked.  What are we intersting in determining?
+1. The answer should succintly address the question being asked.  What are we interested in determining?
 
-2.  Optionally, the answer should include a plot if it aids in the understanding of the results.  Tables are nice, but plots are better.  Plots should always be captioned with an informative title or description.  Try to be concious of color here.  Many people are color blind, and choosing a poor color pallete means they would not be able to understand your plot. Consider using different shapes, or a color pallete which is able to be read by a color blind person.  Again, this is optional.
+2.  Optionally, the answer should include a plot if it aids in the understanding of the results.  Tables are nice, but plots are better.  Plots should always be captioned with an informative title or description, and should be aesthetically pleasing.  Less is more in this case.  Try not to use extremly vibrant colors, or absurdly large/small shapes.  Stata has an OK default, but feel free to change a few things up now and again.  Try to be concious of color.  I may or may not be color blond, and choosing a poor color pallete might mean I have no idea what you are plotting.  The worst offense you could do is to plot data in red and green. Consider using different shapes, or a color pallete which is able to be read by a color blind person.  Again, this is optional, but can be a lot of fun too.
 
 3.  The answer should address the method of estimation by name.  This aids in reproducibility and transparency, both of which are cornerstones of science.
 
@@ -101,7 +105,7 @@ diabetes %>%
 
 
 
->*I used linear regression to perform the estimation. I estimate that males have, on average, 10.6 fewer BMI points (95% CI: (8.8, 12.4)) than women of the same weight.*
+>*Using linear regression to perform the estimation, I estimate that males have, on average, 10.6 fewer BMI points (95% CI: (8.8, 12.4)) than women of the same weight.\footnote{I made up this data.  This conclusion is not factual.}*
 
 This answer provides a thorough and informative answer to the clinician's question.  Now the clinican not only knows if there is an effect, but in which direction the effect operates.  We are also given a 95% confidence interval, which is quite narrow, meaning we can me reasonably certain in our estimate.
 
@@ -109,5 +113,5 @@ Note that this answer assumes that all the assumptions of the regression have be
 
 # Conclusion
 
-Good answers to statistical answers are dense in information while being easy to read and short.  It takes practice to become good at this sort of thing, but it pays in spades.
+Good answers to statistical questions are dense in information while being short and easy to read.  It takes practice to become good at this sort of thing, but it pays in spades. I emplore you to practice this sort of writing in all your assignments.  Invest in becoming a better statistical communicator.
 
