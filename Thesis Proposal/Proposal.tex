@@ -1,0 +1,38 @@
+\documentclass[12pt,a4paper, titlepage]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{cleveref}
+\usepackage{glossaries}
+
+%Double spacing
+\usepackage{setspace}
+\doublespacing
+
+\usepackage[left=2.00cm, right=2.00cm, top=2.00cm, bottom=2.00cm]{geometry}
+\author{Demetri Pananos}
+\title{Doctoral Thesis Research Proposal}
+\begin{document}
+	
+	\pagenumbering{roman}
+	\maketitle
+	\tableofcontents
+	\setcounter{tocdepth}{5}
+	\newpage
+	
+	%Reset page numbers
+	\pagenumbering{gobble}% Remove page numbers (and reset to 1)
+	\pagenumbering{arabic}
+	
+	
+	%Inlcude sections here
+	\section{Introduction}
+	
+	\newpage
+	
+	\section{Literature Review}
+	\input{"Sections/ODEs/DifferentialEquations"}
+
+\end{document}
