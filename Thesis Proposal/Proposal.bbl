@@ -1,0 +1,23 @@
+\begin{thebibliography}{1}
+
+\bibitem{miller1982ordinary}
+Richard~K Miller and Anthony~N Michel.
+\newblock {\em Ordinary differential equations}.
+\newblock Academic Press, 1982.
+
+\bibitem{morris1963ordinary}
+Morris. Tenenbaum and Harry Pollard.
+\newblock {\em Ordinary differential equations: an elementary textbook for
+  students of mathematics, engineering, and the sciences}.
+\newblock Dover Publications, 1963.
+
+\bibitem{boyce2012differential}
+WE~Boyce and RC~DiPrima.
+\newblock Differential equations elementary and boundary value problems, 2012.
+
+\bibitem{corless2013graduate}
+Robert~M Corless and Nicolas Fillion.
+\newblock A graduate introduction to numerical methods.
+\newblock {\em AMC}, 10:12, 2013.
+
+\end{thebibliography}
