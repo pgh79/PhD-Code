@@ -20,4 +20,10 @@ Robert~M Corless and Nicolas Fillion.
 \newblock A graduate introduction to numerical methods.
 \newblock {\em AMC}, 10:12, 2013.
 
+\bibitem{gelman2013bayesian}
+Andrew Gelman, Hal~S Stern, John~B Carlin, David~B Dunson, Aki Vehtari, and
+  Donald~B Rubin.
+\newblock {\em Bayesian data analysis}.
+\newblock Chapman and Hall/CRC, 2013.
+
 \end{thebibliography}

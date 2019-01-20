@@ -1,10 +1,13 @@
-\contentsline {section}{Introduction}{1}
-\contentsline {section}{Literature Review}{2}
-\contentsline {subsection}{Differential Equations}{2}
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Literature Review}{2}
+\contentsline {subsection}{\numberline {2.1}Differential Equations}{2}
 \contentsline {subsubsection}{What is a Differential Equation}{2}
 \contentsline {subsubsection}{Existence \& Uniqueness}{2}
 \contentsline {subsubsection}{Solutions for Ordinary Differential Equations}{3}
 \contentsline {subsubsection}{Numerical Solutions to Ordinary Differential Equations}{3}
 \contentsline {subsubsection}{Quality of a Numerical Solution}{4}
 \contentsline {subsubsection}{Superior Methods for Numerical Solutions}{4}
-\contentsline {section}{\textbf {References}}{6}
+\contentsline {subsection}{\numberline {2.2}Bayesian Statistics}{6}
+\contentsline {subsubsection}{Bayesians v. Frequentists}{6}
+\contentsline {subsubsection}{Bayesian Modelling}{6}
+\contentsline {section}{\textbf {References}}{8}

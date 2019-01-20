@@ -1,46 +1,48 @@
 This is BibTeX, Version 0.99d (TeX Live 2018)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: Proposal.aux
+A level-1 auxiliary file: Sections/Bayes/Bayes.aux
 The style file: unsrt.bst
-Database file #1: Sections/ODEs/ODEs.bib
-You've used 4 entries,
+Database file #1: Sections/ODEs/ODEs_bib.bib
+Database file #2: Sections/Bayes/Bayes_bib.bib
+You've used 5 entries,
             1791 wiz_defined-function locations,
-            468 strings with 4078 characters,
-and the built_in function-call counts, 661 in all, are:
-= -- 50
-> -- 32
+            474 strings with 4293 characters,
+and the built_in function-call counts, 877 in all, are:
+= -- 63
+> -- 52
 < -- 0
-+ -- 12
-- -- 8
-* -- 25
-:= -- 112
-add.period$ -- 11
-call.type$ -- 4
++ -- 19
+- -- 14
+* -- 39
+:= -- 150
+add.period$ -- 14
+call.type$ -- 5
 change.case$ -- 2
 chr.to.int$ -- 0
-cite$ -- 4
-duplicate$ -- 34
-empty$ -- 75
-format.name$ -- 8
-if$ -- 150
+cite$ -- 5
+duplicate$ -- 44
+empty$ -- 94
+format.name$ -- 14
+if$ -- 197
 int.to.chr$ -- 0
-int.to.str$ -- 4
-missing$ -- 5
-newline$ -- 22
-num.names$ -- 4
-pop$ -- 22
+int.to.str$ -- 5
+missing$ -- 7
+newline$ -- 27
+num.names$ -- 5
+pop$ -- 29
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 15
+skip$ -- 17
 stack$ -- 0
 substring$ -- 6
-swap$ -- 4
+swap$ -- 5
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 0
-while$ -- 5
-width$ -- 5
-write$ -- 41
+while$ -- 6
+width$ -- 6
+write$ -- 51

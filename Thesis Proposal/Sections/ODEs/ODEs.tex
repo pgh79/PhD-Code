@@ -10,7 +10,7 @@ For the purposes of this proposal, a differential equation is an equation relati
 \dfrac{d \mathbf{y}}{dt}  = \mathbf{F}(t,\mathbf{y}(t);\bm{\theta})
 \end{equation}
 %
-Here, $ \mathbf{F} : \mathbb{R} \times \mathbb{R}^n \rightarrow \mathbb{R}^n $ is a vector field, and $ \bm{\theta} \in \mathbb{R}^m $ is a vector of parameters for the differential equation.  From here forth, we supress the dependency on $ \bm{\theta} $, but understand that $ \mathbf{F} $ may depend on unknown parameters. Differential equations of these forms are called \textit{ordinary differential equations} (ODEs) since they are deterministic and involve derivatives of a single variable.  Often, \cref{ODE} is accompanied by a value of $ \mathbf{y} $  evaluated at a point in it's domain.  This is called an \textit{initial condition} and is written as $ \mathbf{y}(t_0) = \mathbf{y_0} $ for some $ t_0 \in \mathbb{R}$.  The conjunction of \cref{ODE} and an initial value is referred to as an \textit{initial value problem}.
+Here, $ \mathbf{F} : \mathbb{R} \times \mathbb{R}^n \rightarrow \mathbb{R}^n $ is a vector field, and $ \bm{\theta} \in \mathbb{R}^m $ is a vector of parameters for the differential equation.  From here forth, I suppress the dependency on $ \bm{\theta} $, but understand that $ \mathbf{F} $ may depend on unknown parameters. Differential equations of these forms are called \textit{ordinary differential equations} (ODEs) since they are deterministic and involve derivatives of a single variable.  Often, \cref{ODE} is accompanied by a value of $ \mathbf{y} $  evaluated at a point in it's domain.  This is called an \textit{initial condition} and is written as $ \mathbf{y}(t_0) = \mathbf{y_0} $ for some $ t_0 \in \mathbb{R}$.  The conjunction of \cref{ODE} and an initial value is referred to as an \textit{initial value problem}.
 
 Various complications to \cref{ODE} yield different types of differential equations. If the equation involves partial or mixed partial derivatives, it is called a \textit{partial differential equation}.  If $ \mathbf{F} $ is a function of a past state of $ \mathbf{y} $, it is called a \textit{delay differential equation}.  If one, or more, components of $ \mathbf{F} $ is a stochastic process, it is called a \textit{stochastic differential equation}.  I will not be concerned with these differential equations in this proposal.
 
@@ -20,7 +20,7 @@ Not every differential equation which can be written down has a solution. There 
 
 Consider a differential equation described by \cref{ODE} with the initial condition  $ \mathbf{y}(t_0) = \mathbf{y_0} $. So long as $\mathbf{F}$ is continuously differentiable in a neighbourhood of $ (t_0, \mathbf{y_0}) \in \mathbb{R}\times\mathbb{R}^n $, then there is a neighbourhood of the point $ t_0 $ such that a unique solution to \cref{ODE} exists satisfying the initial condition.
 
-For the purposes of this proposal, we need only check that $ \mathbf{F} $ is continuously differentiable to ensure a solution exists.  For a full proof of this theorem, see \cite{miller1982ordinary,morris1963ordinary}.
+For the purposes of this proposal, it need only be checked that $ \mathbf{F} $ is continuously differentiable to ensure a solution exists.  For a full proof of this theorem, see \cite{miller1982ordinary,morris1963ordinary}.
 
 \subsubsection{Solutions for Ordinary Differential Equations}
 
@@ -63,7 +63,7 @@ y_{n+1} & \equiv y_{n}+ h \cdot f(t_n,y_n)
 	y(t) - y(t_0) = \int_{t_0}^t f(s,y(s)) \, ds \>.
 \end{align*}
 %
-If we wish to evaluate the solution at $ t_0+h $, we approximate the integral using a Reimann sum
+To evaluate the solution at $ t_0+h $, approximate the integral using a Reimann sum
 %
 \begin{equation}
 \begin{aligned}
@@ -75,7 +75,7 @@ In either formulation of Euler's method, $ h $ is known as the \textit{step size
 
 \subsubsection{Quality of a Numerical Solution}
 
-Since Euler's method is an approximation, it admits some error between the computed numerical solution and the exact solution.  Assessments on the quality of a numerical solution can be examined in terms of the \textit{residual}.  For any given ODE, if we knew the analytic solution we would find that $ dy/dt - f(t,y(t))= 0 $ identically.  Since a numerical methods return approximate solutions on a finite set of points (which can then be interpolated via a desired interpolation scheme) then for an interpolated solution, $ z(t) $, it will be the case that $ dz/dt - f(t,z(t)) = \Delta (t) \neq 0$ in general $ \forall t $.  The function $ \Delta (t) $ is called the \textit{residual}.
+Since Euler's method is an approximation, it admits some error between the computed numerical solution and the exact solution.  Assessments on the quality of a numerical solution can be examined in terms of the \textit{residual}.  For any given ODE, if the analytic solution was known, then it would be the case that $ dy/dt - f(t,y(t))= 0 $ identically.  Since a numerical methods return approximate solutions on a finite set of points (which can then be interpolated via a desired interpolation scheme) then for an interpolated solution, $ z(t) $, it will be the case that $ dz/dt - f(t,z(t)) = \Delta (t) \neq 0$ in general $ \forall t $.  The function $ \Delta (t) $ is called the \textit{residual}.
 
 The \textit{order of a method} is defined as $ \mathcal{O}(\Delta (t)) $ and is usually expressed in terms of the step size $ h $.  For instance, Euler's method can be shown to be a $ \mathcal{O}(h) $ method \cite{corless2013graduate}, which means the residual is proportional to the step size.  Smaller steps mean a smaller residual (and thus more accurate solution), but obtaining a desired accuracy may mean taking step sizes too small to be practical.
 
@@ -83,7 +83,7 @@ Most texts on numerical solutions to differential equations use the \textit{loca
 
 \subsubsection{Superior Methods for Numerical Solutions}
 
-Euler's method is not usually used in practice for solving differential equations because of it's large local error.  Better methods, such as Runge-Kutta Methods, which have  $ \mathcal{O}(h^5) $ local error \cite{boyce2012differential}, which is three orders of magnitude more accurate than Euler's method.
+Euler's method is not usually used in practice for solving differential equations because of it's large local error.  Better methods, such as the suite of Runge-Kutta methods,  have local error up to  $ \mathcal{O}(h^5) $ \cite{boyce2012differential}.  The fourth order Runge-Kutta method is particularly popular for numerically solving ODEs.
 
 The method involves a weighted average of evaluations of $ f $ at various points.  The scheme is written as 
 %
@@ -99,6 +99,6 @@ where
 	k_{n4} &= f(t_n + h, y_n + hk_{n3})
 \end{align*}
 %
-This method has residual $ \mathcal{O}(h^4) $ and local error $ \mathcal{O}(h^5) $ \cite{boyce2012differential}, which may explain why MATLAB's implementation of this method is titled \verb|ode45|. 
+This method has residual $ \mathcal{O}(h^4) $ and local error $ \mathcal{O}(h^5) $ \cite{boyce2012differential}, which explains why MATLAB's implementation of this method is titled \verb|ode45|. 
 
-Other numerical schemes exist which can improve the accuracy further, adding in adaptive step sizes to control the size of the error \cite{corless2013graduate}, or to decrease the local error by another order of magnitude, or to solve what are known as \textit{stiff problems}.  Though these complications are interesting, they are not relevant for the purposes of this proposal.
+Other numerical schemes exist which can improve the accuracy further.  The methods may utilize adaptive step sizes to control the size of the error \cite{corless2013graduate}, or they may use integration schemes that decrease the local error by another order of magnitude, or they may be designed to solve what are known as \textit{stiff problems}.  Though these complications are interesting, they are not relevant for the purposes of this proposal.

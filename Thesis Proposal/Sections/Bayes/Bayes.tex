@@ -1,0 +1,43 @@
+\subsection{Bayesian Statistics}
+
+In this section, I introduce some key concepts of Bayesian statistics to be used in the remainder of the proposal.  I begin with explaining how Bayesianism differs from Frequentism in philosophy.  I then introduce Bayes Nets as a tool for writing down complex Bayesian models in such a way as to preserve economy of thought.  Finally, I discuss some finer points of Bayesian modelling, such as model diagnostics and MCMC computation.
+
+
+\subsubsection{Bayesians v. Frequentists}
+
+Statistical methods taught in most  university classes are Frequentist methods.  In Frequentism, probability is understood as the long term relative frequency of an event occurring.  Consequently, Statisticians assess estimators by considering the behaviour of the estimator under continued construction.  
+
+This is exemplified by the confidence interval, which is named so not because it has a 95\% probability of containing the true estimand\footnote{To the dismay of students learning about probability for the first time.}, but because the long term relative frequency of confidence intervals containing the true estimand is 95\%.  Thus, Frequentists never make probabalistic statements about any one confidence interval in particular, only about the behaviour of confidence intervals constructed ad infinitum.  Frequentistism is strongly contrasted against Bayesianism, where probability represents a strength in a belief \cite{gelman2013bayesian}.  Under the Bayesian paradigm, it is completely acceptable to make probabilistic statements about a particular interval.
+
+
+Aside from interpretation of interval estimators, being Bayesian allows Statisticians to enjoy various other benefits, including: Sequential inference, inference from small samples, and a natural framework for modelling nested data \cite{gelman2013bayesian}.
+
+\subsubsection{Bayesian Modelling}
+
+Core to Bayesian statistics is Bayes' Theorem
+%
+\begin{equation}\label{Bayes}
+	P( \bm{\theta} \vert \mathbf{x}) \propto P(\mathbf{x} \vert \bm{\theta}) P(\bm{\theta}) \>.
+\end{equation}
+%
+Bayesian's refer to $  P( \bm{\theta} \vert \mathbf{x}) $, $ P(\mathbf{x} \vert \bm{\theta})  $, and $P(\bm{\theta})$ as the \textit{posterior}, \textit{the likelihood}, and \textit{the prior} respectively.  Since the product of Bayes' theorem is a probability distribution (i.e. the probability of the parameters conditioned on the data), inferences resulting from a Bayesian analysis are expressed in probabilistic statements. Bayesian modelling begins by specifying a full probability model for the phenomenon.  A likelihood for the data generating process is specified, and prior knowledge about the parameters is codified in terms of a probability distribution (i.e. the prior).  Conditioning on the observed data is performed, and the posterior is calculated and interpreted.  Finally, the resulting model is evaluated and the implications of the resulting posterior are assessed.
+
+Bayesian models can become quite complex, so to ease economy of thought, Bayes nets can be used to exposit the relationship amongst the various parameters.
+
+\begin{figure}[h!]\label{bayesnet}
+	\centering
+	\begin{tikzpicture}
+		\node[latent, xshift = -1.0 cm] (a) {$\alpha$};
+		\node[latent, right = of a]  (b) {$\beta$};
+		\node[latent, below = of a, xshift = 1.0 cm]  (theta) {$\theta$};
+		\node[obs, below = of theta](y){$y$};
+		
+		\edge{a,b}{theta};
+		\edge{theta}{y};
+		
+		\plate{exp}{(theta)(y)}{$N$};
+	\end{tikzpicture}
+	\caption{Bayes net for hierarchical binomial model.  Note here that nodes with shading correspond to observed data, while nodes without shading are latent.}
+\end{figure}
+
+

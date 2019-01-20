@@ -84,7 +84,7 @@ fit = rstan::stan(file = model,
                   control = list(max_treedepth = 13,adapt_delta = 0.8)
 )
 
-check_rhat(fit)
+check_all_diagnostics(fit)
 
 params = rstan::extract(fit)
 

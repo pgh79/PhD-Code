@@ -8,7 +8,10 @@
 \usepackage{glossaries}
 \usepackage{bm}
 \usepackage{mathtools}
-
+\usepackage{enumerate}
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+\usepackage{caption}
 %Double spacing
 \usepackage{setspace}
 \onehalfspacing
@@ -22,7 +25,7 @@
 	\maketitle
 	\tableofcontents
 	\setcounter{tocdepth}{5}
-	\setcounter{secnumdepth}{0}
+	\setcounter{secnumdepth}{2}
 	\newpage
 	
 	%Reset page numbers
@@ -34,16 +37,15 @@
 	\section{Introduction}
 	
 	\newpage
-	
 	\section{Literature Review}
-	\input{"Sections/ODEs/DifferentialEquations"}
-	
+	\input{Sections/ODEs/ODEs.tex}
+	\include{Sections/Bayes/Bayes}	
 	
 	
 	
 	\newpage
 	\addcontentsline{toc}{section}{\textbf{References}}
-	\bibliography{Sections/ODEs/ODEs.bib}
+	\bibliography{Sections/ODEs/ODEs_bib,Sections/Bayes/Bayes_bib}
 	\bibliographystyle{unsrt}
 
 \end{document}
