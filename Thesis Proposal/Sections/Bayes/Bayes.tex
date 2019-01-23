@@ -51,8 +51,25 @@ Here, $ P(\alpha, \beta)  $ is the prior for the parameters of the beta distribu
 	\label{bayesnet}
 \end{figure}
 
-Bayes nets can be used to do inference, and a literature of algorithms and methods exists for the purposes of doing so \cite{Bishop2006pattern,koller2009probabilistic}.  Here, I use them for the sole purpose of exposition, and use other methods for model fitting.
+Bayes nets can be used to do inference, and a literature of algorithms and methods exists for the purposes of doing so \cite{Bishop2006pattern,koller2009probabilistic}.  Here, I use them for the sole purpose of exposition.
 
 
-\subsubsection{Bayesian Estimators}
+\subsubsection{Model Assessment}
+
+Once a model is specified, and the posterior for the parameters obtained, the model fit, not only to the data but also to the practitioner's substantitive knowledge, must be assesed.  
+
+Since the result of a Bayesian analysis is a posterior distribution of the model parameters, it is easy to simulate data from the data generating process.  Let $ y $ be observed data, and $ \theta $ be a vector of (hyper)parameters for the model.  Denote $ \tilde{y} $ as replicated data from the data generating process, or as Gelman writes, ``data that we \textit{would} have seen tomorrow if the experiment that generated $ y $ today were replicated with the same model and the same value of $ \theta $ that produced the observed data" \cite[page~145]{gelman2013bayesian}.  Then the distribution of the replicated data conditioned on the observed data is 
+%
+\begin{equation}\label{PPD}
+	p(\tilde{y} \vert y) = \int p(\tilde{y} \vert \theta) p(\theta \vert y) \, d\theta  \>.
+\end{equation}
+%
+The distribution in \cref{PPD} is called the \textit{posterior predictive distribution}.  It stands to reason that if the model fits the data well, then observed data should look plausible under the posterior predictive distribution.  Simulated data sets are generated from \cref{PPD} and are compared to the observed data.  Any systematic differences between observed and simulated may point to areas in which the model can be improved.
+
+Aspects of the oberved data can be summarized into a \textit{test quantity} which is then compared against replicated data. This is usually some summary statistic of the observed data. Tail area probability computations can be used to quantify  the observed data's departure from the posterior predictive simulations.  If $ T(y) $ is a test quantity, then the tail area probability is $ P(T(\tilde{y}) > T(y) ) $.  This is simular to the Frequentist p-value.
+
+
+\subsubsection{Markov Chain Monte Carlo \& Modern Methods}
+
+The integrals in Bayesian statistics quickly become intractable when considering unsual models or relaxing assumptions for simple models.  Consequently, computational methods have been developed to aid in fitting models.  The result is the ability to sample from the posterior distribution without having to know the exact analytical form of the posterior denisty.
 
