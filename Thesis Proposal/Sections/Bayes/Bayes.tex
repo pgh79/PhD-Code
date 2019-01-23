@@ -5,14 +5,12 @@ In this section, I introduce some key concepts of Bayesian statistics to be used
 
 \subsubsection{Bayesians v. Frequentists}
 
-Statistical methods taught in most  university classes are Frequentist methods.  In Frequentism, probability is understood as the long term relative frequency of an event occurring.  Consequently, Statisticians assess estimators by considering the behaviour of the estimator under continued construction.  
+Statistical methods taught in most  university classes are Frequentist methods.  In Frequentism, probability is understood as the long term relative frequency of an event occurring.  Consequently, Statisticians assess estimators by considering the behaviour of the estimator under repeated construction.  
 
-This is exemplified by the confidence interval, which is named so not because it has a 95\% probability of containing the true estimand\footnote{To the dismay of students learning about probability for the first time.}, but because the long term relative frequency of confidence intervals containing the true estimand is 95\%.  Thus, Frequentists never make probabalistic statements about any one confidence interval in particular, only about the behaviour of confidence intervals constructed ad infinitum.  Frequentistism is strongly contrasted against Bayesianism, where probability represents a strength in a belief \cite{gelman2013bayesian}.  Under the Bayesian paradigm, it is completely acceptable to make probabilistic statements about a particular interval.
+This is exemplified by the confidence interval, which is named so not because it has a 95\% probability of containing the true estimand\footnote{To the dismay of students learning about probability for the first time.}, but because the long term relative frequency of confidence intervals containing the true estimand is 95\%.  Thus, Frequentists never make probabilistic statements about any one confidence interval in particular, only about the behaviour of confidence intervals constructed ad infinitum.  Frequentistism is strongly contrasted against Bayesianism, where probability represents a strength in a belief \cite{gelman2013bayesian}.  Under the Bayesian paradigm, it is completely acceptable to make probabilistic statements about a particular interval.  In fact, all inferences made from a Bayesian data analysis are made in terms of probabilistic statements.
 
 
-Aside from interpretation of interval estimators, being Bayesian allows Statisticians to enjoy various other benefits, including: Sequential inference, inference from small samples, and a natural framework for modelling nested data \cite{gelman2013bayesian}.
-
-\subsubsection{Bayesian Modelling}
+\subsubsection{Bayesian Networks}
 
 Core to Bayesian statistics is Bayes' Theorem
 %
@@ -22,22 +20,39 @@ Core to Bayesian statistics is Bayes' Theorem
 %
 Bayesian's refer to $  P( \bm{\theta} \vert \mathbf{x}) $, $ P(\mathbf{x} \vert \bm{\theta})  $, and $P(\bm{\theta})$ as the \textit{posterior}, \textit{the likelihood}, and \textit{the prior} respectively.  Since the product of Bayes' theorem is a probability distribution (i.e. the probability of the parameters conditioned on the data), inferences resulting from a Bayesian analysis are expressed in probabilistic statements. Bayesian modelling begins by specifying a full probability model for the phenomenon.  A likelihood for the data generating process is specified, and prior knowledge about the parameters is codified in terms of a probability distribution (i.e. the prior).  Conditioning on the observed data is performed, and the posterior is calculated and interpreted.  Finally, the resulting model is evaluated and the implications of the resulting posterior are assessed.
 
-Bayesian models can become quite complex, so to ease economy of thought, Bayes nets can be used to exposit the relationship amongst the various parameters.
+Bayesian models can become quite complex, so to ease economy of thought, Bayesian networks (Bayes nets) can be used to exposit the relationship amongst the various parameters and observed data.  A Bayes net is a directed acyclic graph which represents a factorization of the joint probability distribution of the model. The nodes of the graph denote random variables, while the edges denote dependence of the child node on the parent node \cite{Bishop2006pattern}. 
 
-\begin{figure}[h!]\label{bayesnet}
+Shown in \cref{bayesnet} is an example of a Bayes net for Gelman's rat tumour example in \cite{gelman2013bayesian}, which I explain here.  A total of $ N = 71 $ experiments on lab rats have been conducted in the past to assess the risk of developing endometrial stromyl polyps.  A rat can either develop the endometrial stromal polyp, or not develop the endometrial stromyl polyp, so the number of rats which develop the polyp, $ y_i $, is modelled as binomial.  Each of the 71 previous experiments is modelled as having it's own probability of success $ \theta_i $, which we postulate are drawn from a beta distribution with parameters $ \alpha $ and $ \beta $.  
+
+Traditionally, the model would be written as 
+%
+\begin{align*}
+	[\alpha,\beta]^T &\sim P(\alpha, \beta) \\
+	\theta_i &\sim \operatorname{Beta}(\alpha,\beta) \quad i = 1 \dots N\\
+	y_i &\sim \operatorname{Binomial}(\theta_i ; n_i) \quad i = 1 \dots N
+	\end{align*}
+%
+Here, $ P(\alpha, \beta)  $ is the prior for the parameters of the beta distribution, and $ n_i $ is the number of rats in the $ n^{th} $ experiment.  This same model is written as a Bayes net in \cref{bayesnet}.   The node containing $ \alpha $ and $ \beta $ is the parent of $ \theta $, indicating that $ \theta $ relies on $ \alpha $ and $ \beta $, and $ y $ is the child of $ \theta $, indicating that $ y $ relies on $ \theta $.  The rectangle surrounding $ \theta $ and $ y $ signifies that there are $ N $ such copies of these random variables.  Instead of explicitly writing out all $ N=71 $ of these random variables, we instead place them in what is known as a ``plate", and indicate in the bottom corner how many replicates there are.  Items in a plate are considered to be independent and identically distributed.  Bayes nets make it very easy to write out the posterior distribution of the parameters.  We simply follow the net from the bottom up, writing $ p(\alpha,\beta, \theta \vert y) \propto p(y\vert \theta)p(\theta \vert \alpha, \beta)p(\alpha,\beta) $, conditioning each node on it's parent nodes.
+
+\begin{figure}[h!]
+
 	\centering
 	\begin{tikzpicture}
-		\node[latent, xshift = -1.0 cm] (a) {$\alpha$};
-		\node[latent, right = of a]  (b) {$\beta$};
-		\node[latent, below = of a, xshift = 1.0 cm]  (theta) {$\theta$};
+		\node[latent] (ab) {$\alpha,\beta$};
+		\node[latent, below = of ab]  (theta) {$\theta$};
 		\node[obs, below = of theta](y){$y$};
 		
-		\edge{a,b}{theta};
+		\edge{ab}{theta};
 		\edge{theta}{y};
 		
 		\plate{exp}{(theta)(y)}{$N$};
 	\end{tikzpicture}
 	\caption{Bayes net for hierarchical binomial model.  Note here that nodes with shading correspond to observed data, while nodes without shading are latent.}
+	\label{bayesnet}
 \end{figure}
 
+Bayes nets can be used to do inference, and a literature of algorithms and methods exists for the purposes of doing so \cite{Bishop2006pattern,koller2009probabilistic}.  Here, I use them for the sole purpose of exposition, and use other methods for model fitting.
+
+
+\subsubsection{Bayesian Estimators}
 

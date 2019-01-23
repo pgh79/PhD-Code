@@ -9,5 +9,6 @@
 \contentsline {subsubsection}{Superior Methods for Numerical Solutions}{4}
 \contentsline {subsection}{\numberline {2.2}Bayesian Statistics}{6}
 \contentsline {subsubsection}{Bayesians v. Frequentists}{6}
-\contentsline {subsubsection}{Bayesian Modelling}{6}
-\contentsline {section}{\textbf {References}}{8}
+\contentsline {subsubsection}{Bayesian Networks}{6}
+\contentsline {subsubsection}{Bayesian Estimators}{8}
+\contentsline {section}{\textbf {References}}{9}

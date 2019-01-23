@@ -26,4 +26,15 @@ Andrew Gelman, Hal~S Stern, John~B Carlin, David~B Dunson, Aki Vehtari, and
 \newblock {\em Bayesian data analysis}.
 \newblock Chapman and Hall/CRC, 2013.
 
+\bibitem{Bishop2006pattern}
+Christopher~M. Bishop.
+\newblock {\em Pattern Recognition and Machine Learning (Information Science
+  and Statistics)}.
+\newblock Springer-Verlag, Berlin, Heidelberg, 2006.
+
+\bibitem{koller2009probabilistic}
+Daphne Koller, Nir Friedman, and Francis Bach.
+\newblock {\em Probabilistic graphical models: principles and techniques}.
+\newblock MIT press, 2009.
+
 \end{thebibliography}
