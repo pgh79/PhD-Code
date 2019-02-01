@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{miller1982ordinary}
 Richard~K Miller and Anthony~N Michel.
@@ -36,5 +36,43 @@ Christopher~M. Bishop.
 Daphne Koller, Nir Friedman, and Francis Bach.
 \newblock {\em Probabilistic graphical models: principles and techniques}.
 \newblock MIT press, 2009.
+
+\bibitem{livingstone2016geometric}
+Samuel Livingstone, Michael Betancourt, Simon Byrne, and Mark Girolami.
+\newblock On the geometric ergodicity of hamiltonian monte carlo.
+\newblock {\em arXiv preprint arXiv:1601.08057}, 2016.
+
+\bibitem{mcelreath2016statistical}
+Richard McElreath.
+\newblock {\em Statistical Rethinking: A Bayesian Course with Examples in R and
+  Stan}, volume 122.
+\newblock CRC Press, 2016.
+
+\bibitem{neal2011mcmc}
+Radford~M Neal et~al.
+\newblock Mcmc using hamiltonian dynamics.
+\newblock {\em Handbook of Markov Chain Monte Carlo}, 2(11):2, 2011.
+
+\bibitem{hoffman2014no}
+Matthew~D Hoffman and Andrew Gelman.
+\newblock The no-u-turn sampler: adaptively setting path lengths in hamiltonian
+  monte carlo.
+\newblock {\em Journal of Machine Learning Research}, 15(1):1593--1623, 2014.
+
+\bibitem{betancourt2017conceptual}
+Michael Betancourt.
+\newblock A conceptual introduction to hamiltonian monte carlo.
+\newblock {\em arXiv preprint arXiv:1701.02434}, 2017.
+
+\bibitem{betancourt2017robust}
+Robust statistical workflow with rstan.
+\newblock
+  \url{https://betanalpha.github.io/assets/case_studies/rstan_workflow.html#25_validating_a_fit_in_stan}.
+\newblock Accessed: 2019-01-31.
+
+\bibitem{kass1998markov}
+Robert~E Kass, Bradley~P Carlin, Andrew Gelman, and Radford~M Neal.
+\newblock Markov chain monte carlo in practice: a roundtable discussion.
+\newblock {\em The American Statistician}, 52(2):93--100, 1998.
 
 \end{thebibliography}

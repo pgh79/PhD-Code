@@ -12,4 +12,5 @@
 \contentsline {subsubsection}{Bayesian Networks}{6}
 \contentsline {subsubsection}{Model Assessment}{8}
 \contentsline {subsubsection}{Markov Chain Monte Carlo \& Modern Methods}{8}
-\contentsline {section}{\textbf {References}}{9}
+\contentsline {subsubsection}{Diagnostics for Hamiltonian Monte Carlo}{9}
+\contentsline {section}{\textbf {References}}{10}
