@@ -75,4 +75,10 @@ Robert~E Kass, Bradley~P Carlin, Andrew Gelman, and Radford~M Neal.
 \newblock Markov chain monte carlo in practice: a roundtable discussion.
 \newblock {\em The American Statistician}, 52(2):93--100, 1998.
 
+\bibitem{rosenbaum2016basic}
+Sara~E Rosenbaum.
+\newblock {\em Basic pharmacokinetics and pharmacodynamics: An integrated
+  textbook and computer simulations}.
+\newblock John Wiley \& Sons, 2016.
+
 \end{thebibliography}

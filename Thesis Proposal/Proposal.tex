@@ -9,6 +9,7 @@
 \usepackage{mathtools}
 \usepackage{enumerate}
 \usepackage{tikz}
+\usetikzlibrary{arrows}
 \usetikzlibrary{bayesnet}
 \usepackage{caption}
 \usepackage{url}
@@ -41,14 +42,15 @@
 	
 	\newpage
 	\section{Literature Review}
-	\input{Sections/ODEs/ODEs.tex}
-	\include{Sections/Bayes/Bayes}	
+	\input{Sections/ODEs/ODEs}
+	\include{Sections/Bayes/Bayes}
+	\include{Sections/PKPD/PKPD}	
 	
 	
 	
 	\newpage
 	\addcontentsline{toc}{section}{\textbf{References}}
-	\bibliography{Sections/ODEs/ODEs_bib,Sections/Bayes/Bayes_bib}
+	\bibliography{Sections/ODEs/ODEs_bib,Sections/Bayes/Bayes_bib,Sections/PKPD/PKPD_bib}
 	\bibliographystyle{unsrt}
 
 \end{document}
