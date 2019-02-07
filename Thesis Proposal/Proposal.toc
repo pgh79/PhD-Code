@@ -13,8 +13,9 @@
 \contentsline {subsubsection}{Model Assessment}{8}
 \contentsline {subsubsection}{Markov Chain Monte Carlo \& Modern Methods}{8}
 \contentsline {subsubsection}{Diagnostics for Hamiltonian Monte Carlo}{9}
-\contentsline {subsection}{\numberline {2.3}Pharmacokinetics \& Pharmacodynamics}{10}
+\contentsline {subsection}{\numberline {2.3}Pharmacokinetics}{10}
 \contentsline {subsubsection}{Pharmacokinetics v. Pharmacodynamics}{10}
 \contentsline {subsubsection}{A One Compartment Pharmacokinetic Model}{10}
-\contentsline {subsection}{\numberline {2.4}A Two Compartment Pharmacokinetic Model}{11}
-\contentsline {section}{\textbf {References}}{12}
+\contentsline {subsubsection}{A Two Compartment Pharmacokinetic Model}{11}
+\contentsline {subsection}{\numberline {2.4}Reinforcement Learning}{13}
+\contentsline {section}{\textbf {References}}{14}

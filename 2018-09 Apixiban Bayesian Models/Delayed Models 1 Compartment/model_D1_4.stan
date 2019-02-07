@@ -19,10 +19,12 @@ data {
   int<lower=1> N_t; //Number of time points sampeld per patient
   real times[N_t];   //Measurement times. 
                      //Same for all patients.  Measured in hours post dose.
+                     
   
   
   int<lower=1>N_covariates;
   int<lower=1> N_patients;
+  int<lower=1> N;
   real C_hat[N_patients, N_t]; //Observed concentration.  
                               //  Originally in ng/ml.  
                               //Convert to mg/L bc Dose is in mg.
@@ -146,7 +148,15 @@ model {
 
 generated quantities {
   real C_ppc[N_patients, N_t];
-  for (n in 1:N_patients)
-    for (t in 1:N_t)
+  vector[N] log_lik;
+  for (n in 1:N_patients){
+    for (t in 1:N_t){
       C_ppc[n, t] = lognormal_rng(log(C[n, t]), sigma );
+      log_lik[N_t*(n-1) + t] = lognormal_lpdf( C_hat[n, t] | log(C[n,t]), sigma);
+    }
+  }
+      
+  
+          
+  
 }

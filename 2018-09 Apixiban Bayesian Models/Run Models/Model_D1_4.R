@@ -55,6 +55,7 @@ X= apixaban.data %>%
 
 X_v = X[,c(1,2,4)]
 N_patients = dim(X)[1]
+N = N_t*N_patients
 N_covariates = dim(X)[2]
 
 
@@ -67,7 +68,8 @@ rstan::stan_rdump(c(
   "C_hat",
   'N_covariates',
   'X',
-  'X_v'
+  'X_v',
+  'N'
 ),file = file.name)
 
 input_data <- read_rdump(file.name)
@@ -84,7 +86,7 @@ fit = rstan::stan(file = model,
                   control = list(max_treedepth = 13,adapt_delta = 0.8)
 )
 
-check_rhat(fit)
+check_all_diagnostics(fit)
 
 params = rstan::extract(fit)
 
