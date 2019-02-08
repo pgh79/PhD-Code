@@ -25,6 +25,7 @@ data {
   int<lower=1>N_covariates;
   int<lower=1> N_patients;
   int<lower=1> N;
+  int<lower=1> N_v_c;
   real C_hat[N_patients, N_t]; //Observed concentration.  
                               //  Originally in ng/ml.  
                               //Convert to mg/L bc Dose is in mg.
@@ -38,13 +39,14 @@ data {
                                      //Creatinine, 
                                      //Sex (binary), 
                                      //Disease (binary)
+                                     //BMI
                                      
-  matrix[N_patients,3] X_v;
+  matrix[N_patients,N_v_c] X_v;
 }
 parameters {
   
   //Volume
-  vector[3] BETA_V;
+  vector[N_v_c] BETA_V;
   real<lower=0> SIGMA_V;
   real z_V[N_patients];
   

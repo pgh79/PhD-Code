@@ -18,8 +18,10 @@ covariates = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentC
 
 #Join the covariates with a left join.
 apixaban.data = apixaban.data %>% 
-  mutate(Concentration_scaled = 0.001*Concentration) %>%  #conver to mg/L for stability
   left_join(covariates) %>% 
+  mutate(Concentration_scaled = 0.001*Concentration, #conver to mg/L for stability
+         Height = sqrt(Weight/BMI)
+         ) %>%  
   arrange(Subject, Time) %>% 
   filter(Time>0) %>% 
   replace_na(list(Creatinine = mean(covariates$Creatinine,na.rm = T)))
@@ -46,14 +48,16 @@ C_hat = apixaban.data %>%
 N_t = length(times)
 
 X= apixaban.data %>% 
-  distinct(Subject,Sex,Group, Age, Weight,Creatinine) %>% 
+  distinct(Subject,Sex,Group, Age, Weight,Creatinine,Height) %>% 
   mutate(Age= (Age - mean(Age))/sd(Age), 
          Weight = (Weight - mean(Weight))/sd(Weight),
-         Creatinine = (Creatinine - mean(Creatinine))/sd(Creatinine)) %>% 
+         Creatinine = (Creatinine - mean(Creatinine))/sd(Creatinine),
+         Height = (Height - mean(Height))/sd(Height)) %>% 
   model.matrix(~Sex*Group + Weight + Age+ Creatinine, data = .)
 
 
-X_v = X[,c(1,2,4)]
+X_v = X[,c('(Intercept)','SexMale','Weight')]
+N_v_c = dim(X_v)[2]
 N_patients = dim(X)[1]
 N = N_t*N_patients
 N_covariates = dim(X)[2]
@@ -69,6 +73,7 @@ rstan::stan_rdump(c(
   'N_covariates',
   'X',
   'X_v',
+  'N_v_c',
   'N'
 ),file = file.name)
 
