@@ -4,7 +4,7 @@ library(bayesplot)
 library(rstan)
 options(mc.cores = parallel::detectCores())
 source('2018-09 Apixiban Bayesian Models/stan_utilities.R')
-
+library(loo)
 
 #Use model_D1.2 Lognormal likelihood. Seems to be better in terms of diagnostiscs
 ###########################
@@ -97,6 +97,10 @@ params = rstan::extract(fit)
 
 
 
+make.plots = F
+
+if(make.plots){
+  
 #---- plots ----
 #----Bayesian Credible Intervals ----
 
@@ -248,3 +252,37 @@ dfp<-simulations %>%
 
 dfp
 
+}
+
+
+
+y = params$C[ , ,]*1000
+N =  dim(y)[1]
+
+simulations = y %>%
+  as.table() %>%
+  `dimnames<-`(list(
+    Round = 1:N ,
+    Subject = subject_names,
+    Time = times
+  )) %>%
+  as.data.frame.table(responseName = 'Simulated', stringsAsFactors = F) %>%
+  mutate(
+    Time = as.numeric(Time),
+    Subject = as.numeric(Subject),
+    Round = as.numeric(Round)
+  ) %>%
+  left_join(apixaban.data)
+
+mean_sd = function (x, mult = 1) 
+{
+  x <- stats::na.omit(x)
+  ql = quantile(x, 0.025)
+  qu = quantile(x,0.975)
+  mean <- mean(x)
+  data.frame(y = mean, ymin = mean - ql, ymax = mean + qu)
+}
+simulations %>% 
+  ggplot(aes(Concentration, Simulated))+
+  stat_summary(geom = 'pointrange', fun.data = function(x) mean_sd(x,2), alpha = 0.5)+
+  geom_abline(color = 'red')
