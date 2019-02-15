@@ -95,9 +95,13 @@ check_all_diagnostics(fit)
 
 params = rstan::extract(fit)
 
+LL =extract_log_lik(fit, merge_chains = F)
+r_eff = relative_eff(LL)
 
+#167 params I think
+loo(LL, r_eff = r_eff)
 
-make.plots = F
+make.plots = T
 
 if(make.plots){
   
@@ -285,4 +289,5 @@ mean_sd = function (x, mult = 1)
 simulations %>% 
   ggplot(aes(Concentration, Simulated))+
   stat_summary(geom = 'pointrange', fun.data = function(x) mean_sd(x,2), alpha = 0.5)+
+  geom_smooth()+
   geom_abline(color = 'red')

@@ -18,4 +18,7 @@
 \contentsline {subsubsection}{A One Compartment Pharmacokinetic Model}{10}
 \contentsline {subsubsection}{A Two Compartment Pharmacokinetic Model}{11}
 \contentsline {subsection}{\numberline {2.4}Reinforcement Learning}{13}
-\contentsline {section}{\textbf {References}}{14}
+\contentsline {subsubsection}{Formalization of Sequential Decision Making}{13}
+\contentsline {subsubsection}{Policies}{13}
+\contentsline {subsubsection}{Goals for Learning}{14}
+\contentsline {section}{\textbf {References}}{15}
