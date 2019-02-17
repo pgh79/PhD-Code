@@ -3,7 +3,7 @@ library(tidyverse)
 library(bayesplot)
 library(rstan)
 options(mc.cores = parallel::detectCores())
-source('2018-09 Apixiban Bayesian Models/stan_utilities.R')
+source('stan_utilities.R')
 library(loo)
 
 #Use model_D1.2 Lognormal likelihood. Seems to be better in terms of diagnostiscs
@@ -11,10 +11,10 @@ library(loo)
 which.model <- 'model_D1_4'#
 ###########################
 
-apixaban.data = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentData.csv')
+apixaban.data = read_csv('Data/ApixibanExperimentData.csv')
 
 #Covariate information like Weight and Age.  Maybe useful in the regression
-covariates = read_csv('2018-09 Apixiban Bayesian Models/Data/ApixibanExperimentCovariates.csv')
+covariates = read_csv('Data/ApixibanExperimentCovariates.csv')
 
 #Join the covariates with a left join.
 apixaban.data = apixaban.data %>% 
@@ -63,7 +63,7 @@ N = N_t*N_patients
 N_covariates = dim(X)[2]
 
 
-file.name = "2018-09 Apixiban Bayesian Models/Data/model_data.R"
+file.name = "Data/model_data.R"
 rstan::stan_rdump(c(
   "D",
   "times",
@@ -83,7 +83,7 @@ file.remove(file.name)
 
 
 #---- Fit Model ----
-model = glue('2018-09 Apixiban Bayesian Models/Delayed Models 1 Compartment/{which.model}.stan')
+model = glue('Delayed Models 1 Compartment/{which.model}.stan')
 fit = rstan::stan(file = model,
                   data = input_data,
                   chains = 10,
@@ -101,7 +101,7 @@ r_eff = relative_eff(LL)
 #167 params I think
 loo(LL, r_eff = r_eff)
 
-make.plots = T
+make.plots = F
 
 if(make.plots){
   

@@ -109,18 +109,16 @@ model{
   
   // Priors
   //Coefficients
-  BETA_V  ~ normal(0,.5);
+  BETA_V  ~ normal(0,0.5);
   BETA_V[1] ~ normal(log(5.5),0.1);
-  
-  BETA_k  ~ normal(0,1);
-  BETA_ka ~ normal(0,1);
+  BETA_k  ~ normal(0,0.5);
+  BETA_ka ~ normal(0,0.5);
   
   //Noise
-  SIGMA_V ~ normal(0,0.5);
-  SIGMA_k ~ normal(0,0.5);
-  SIGMA_ka ~normal(0,0.5);
-  sigma ~ normal(0,3);  
-  
+  SIGMA_V ~ normal(0,1);
+  SIGMA_k ~ normal(0,1);
+  SIGMA_ka ~normal(0,1);
+  sigma ~ normal(0,1);  
   //Random Effects
   z_V ~ normal(0,1);
   z_k ~ normal(0,1);
@@ -140,7 +138,8 @@ model{
 }
 generated quantities{
   real C_ppc[N];
+  real LogLik[N];
   
   C_ppc = lognormal_rng(log(C), sigma);
-  
+  LogLik = lognormal_lpdf(C_hat | log(C), sigma);
 }

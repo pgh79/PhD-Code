@@ -1,10 +1,3 @@
----
-title: "R Notebook"
-output: html_notebook
----
-
-
-```{r, libraries}
 library(tidyverse)
 library(rstan)
 library(loo)
@@ -14,18 +7,18 @@ source('stan_utilities.R')
 
 
 df = read_csv('Data/apixiban_regression_data.csv') %>% 
-      mutate(SubjectID = as.numeric(factor(Subject)) ) %>% 
-      select(Subject,SubjectID, everything()) %>% 
-      mutate_at(vars(Age,Weight,Creatinine,BMI),scale)
-  
+  mutate(SubjectID = as.numeric(factor(Subject)) ) %>% 
+  select(Subject,SubjectID, everything()) %>% 
+  mutate_at(vars(Age,Weight,Creatinine,BMI),scale)
+
 
 D = 2.5
 N_patients = df$Subject %>% unique %>% length
 patient_ID = df$SubjectID
 
 X = df %>% 
-    distinct(SubjectID, .keep_all = T) %>% 
-    model.matrix(~Group*Sex + Age + Weight + Creatinine, data =.)
+  distinct(SubjectID, .keep_all = T) %>% 
+  model.matrix(~Group*Sex + Age + Weight + Creatinine, data =.)
 N = dim(df)[1]
 p = dim(X)[2]
 times = df$Time
@@ -46,33 +39,43 @@ input_data <- read_rdump(file.name)
 
 fit = stan('Models/LOPO_no_conditioning.stan',
            data = input_data,
-           chains = 4,
+           chains = 12,
            seed = 10090908,
            control = list(max_treedepth = 13,adapt_delta = 0.8),
-          verbose = F)
+           verbose = F)
 
 check_all_diagnostics(fit)
 
-```
-
-```{r}
 p = rstan::extract(fit)
 
 C_pred = p$C %>% apply(., 2 , mean)
 C_q = p$C_ppc %>% 
-      apply(., 2 , function(x) quantile(x, c(0.025, 0.975))) %>% 
+  apply(., 2 , function(x) quantile(x, c(0.025, 0.975))) %>% 
+  t() %>% 
+  as.data.frame() %>% 
+  rename(ymin = `2.5%`, ymax = `97.5%`)
+
+dfp = p$C_ppc[sample(1:dim(p$C_ppc)[1],3),] %>% 
       t() %>% 
-      as.data.frame()
+      as.data.frame() %>% 
+      bind_cols(df %>% select(Time, SubjectID)) %>% 
+      gather(round,val,-SubjectID,-Time)
 
 df$pred = C_pred
 
 df %>% 
   cbind(C_q) %>% 
   ggplot()+
-  geom_line(aes(Time,Concentration_scaled))+
+  geom_ribbon(aes(Time, ymin = ymin, ymax = ymax), fill = 'red', alpha = 0.5)+
   geom_line(aes(Time,pred), color = 'red') +
-  geom_ribbon(aes(Time, ymin = `2.5%`, ymax = `97.5%`), fill = 'red', alpha = 0.5)+
+  geom_line(data = dfp, aes(Time,val,group = round), color = 'blue')+
+  geom_line(aes(Time,Concentration_scaled))+
   facet_wrap(~SubjectID, scale = 'free_y')
-```
 
+df %>% 
+  cbind(C_q) %>% 
+  ggplot()+
+  geom_pointrange(aes(Concentration_scaled, pred, ymin = ymin, ymax = ymax), alpha = 0.25)+
+  geom_abline()+
+  geom_smooth(aes(Concentration_scaled, pred))
 
