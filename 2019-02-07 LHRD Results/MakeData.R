@@ -1,9 +1,9 @@
 library(tidyverse)
 
-apixiban.data = read_csv('Presentations/2019-02-07 LHRD Results/Data/ApixibanExperimentData.csv')
+apixiban.data = read_csv('2019-02-07 LHRD Results/Data/ApixibanExperimentData.csv')
 
 #Covariate information like Weight and Age.  Maybe useful in the regression
-covariates = read_csv('Presentations/2019-02-07 LHRD Results/Data/ApixibanExperimentCovariates.csv')
+covariates = read_csv('2019-02-07 LHRD Results/Data/ApixibanExperimentCovariates.csv')
 
 #Join the covariates with a left join.
 apixiban.data = apixiban.data %>% 
@@ -28,4 +28,5 @@ apixiban.data %>%
   labs(title = 'Mean Apixiban PK-Curves')
 
 apixiban.data %>% 
-  write_csv('Presentations/2019-02-07 LHRD Results/Data/apixiban_regression_data.csv')
+  mutate(Subject = as.factor(Subject)) %>% 
+  write_csv('2019-02-07 LHRD Results/Data/apixiban_regression_data.csv')

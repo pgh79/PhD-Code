@@ -4,7 +4,7 @@ In this section, I discuss elements of differential equation theory.  I begin by
 
 \subsubsection{What is a Differential Equation}
 
-For the purposes of this proposal, a differential equation is an equation relating an unknown function of a single variable to it's derivative. In general, I will be concerned of differential equations of the form
+For the purposes of this proposal, a differential equation is an equation relating an unknown function of a single variable to its derivative. In general, I will be concerned of differential equations of the form
 %
 \begin{equation}\label{ODE}
 \dfrac{d \mathbf{y}}{dt}  = \mathbf{F}(t,\mathbf{y}(t);\bm{\theta})
@@ -24,19 +24,28 @@ For the purposes of this proposal, it need only be checked that $ \mathbf{F} $ i
 
 \subsubsection{Solutions for Ordinary Differential Equations}
 
-Not every differential equation which has a solution can have that solution written in terms of algebraic and transcendental functions.  In particular, this proposal will be concerned with first order linear differential equations, which do have an analytic representation of their solution.  Consider a differential equations of the form
+Not every differential equation which has a solution can have that solution written in terms of algebraic and transcendental functions.  This proposal will be concerned with first order linear differential equations, which do have an analytic representation of their solution.  Consider a differential equation of the form
 
 \begin{equation}\label{ODE2}
 \dfrac{d\mathbf{y}}{dt} = \mathbf{A}(t)\mathbf{y}(t) + \mathbf{g}(t) \>.
 \end{equation}
 
-Here, $ \mathbf{A}: \mathbb{R} \rightarrow \mathbb{R}^{n \times n} $ which may not necessarily be diagonalizable and $ \mathbf{g}:  \mathbb{R} \rightarrow \mathbb{R}^n $.  In general, the solution to \cref{ODE2} can be written in terms of fundamental matrices, namely
+Here, $ \mathbf{A}: \mathbb{R} \rightarrow \mathbb{R}^{n \times n} $ and $ \mathbf{g}:  \mathbb{R} \rightarrow \mathbb{R}^n $.  In general, the solution to \cref{ODE2} can be written in terms of fundamental matrices.  Let $ \mathbf{y}_1(t), \mathbf{y}_{2}(t), \dots , \mathbf{y}_{n}(t) $ be a fundamental set of solutions for the differential equation $ \mathbf{y}' = \mathbf{A}(t)\mathbf{y}(t) $.  Then, the matrix
+%
+\begin{equation*}
+\bm{\psi} (t)= \Big[\mathbf{y}_{1}(t) \>\vert\> \mathbf{y}_{2}(t) \>\vert\> \dots \>\vert\> \mathbf{y}_{n}(t)\Big]
+\end{equation*}
+% 
+is called a fundamental  matrix for the differential equation.
+
+
+The solution to \cref{ODE2} is then
 %
 \begin{equation}\label{ODE2_solution}
 \mathbf{y}(t) = \bm{\psi}(t)\bm{\psi}^{-1}(t_0)\mathbf{x}_0 + \bm{\psi}(t)\int_{t_0}^{t}\bm{\psi}^{-1}(s) \mathbf{g}(s) \, ds \>,
 \end{equation}
 %
-Here, $ \bm{\psi}(t) $ is a fundemantal matrix for \cref{ODE2}. Our key observation here is that so long as the ODE can be form of \cref{ODE2}, then the solution can be written in terms of analytic functions.  For more on solutions to linear differential equations, see \cite{boyce2012differential}.
+Here, $ \bm{\psi}(t) $ is a fundamental matrix for $\mathbf{y}' = \mathbf{A}(t)\mathbf{y}(t) $ . Our key observation here is that so long as the ODE can be form of \cref{ODE2}, then the solution can be written in terms of analytic functions.  For more on solutions to linear differential equations, see \cite{boyce2012differential}.
 \subsubsection{Numerical Solutions to Ordinary Differential Equations}
 
 Not every solution to an ODE which \textit{can} be expressed in terms of analytic functions \textit{should} be expressed in terms of analytic functions. If \cref{ODE} contains many parameters, then \cref{ODE2_solution} may be sufficiently complex so that evaluation of $\mathbf{y}(t)$ is not practical.  In cases like these, or in cases where the solution can not be found in terms of analytic functions, a rich literature of numerical solutions to differential equations exists.
