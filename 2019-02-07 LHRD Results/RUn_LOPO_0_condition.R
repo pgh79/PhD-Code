@@ -13,7 +13,7 @@ for (i in 1:N){
   phrase = glue('Working on Leave Patient {i} Out')
   print(phrase)
   iter = list()
-  lopo_data = LeaveOnePatientOut(input_data = input_data, i = i)
+  lopo_data = LeaveOnePatientOut(input_data = input_data, i = i, t = 0)
   
   
   fit = stan('Models/LOPO_0_condition.stan',
@@ -36,4 +36,4 @@ for (i in 1:N){
 }
 
 
-saveRDS(results, 'LOPO Results/results_0_condition')
+saveRDS(results, 'LOPO Results/results_0_condition_test')

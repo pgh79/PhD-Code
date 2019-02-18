@@ -54,7 +54,7 @@ parameters{
   vector[N_patients] z_k;
   
   // parameter: ka Absorption
-  vector[4] BETA_ka;
+  vector[5] BETA_ka;
   real<lower=0> SIGMA_ka;
   vector[N_patients] z_ka;
   
@@ -87,7 +87,7 @@ transformed parameters{
   vector[N_patients] MU_K;
   vector[N_patients] MU_V;
   
-  MU_KA = X[,{1,3,4,5}]*BETA_ka;
+  MU_KA = X[,{1,3,4,5,6}]*BETA_ka; //Only Baseline, IsMale, Age,Weight, Creatinine
   MU_K = X*BETA_k;
   MU_V = X[,{1,3,5}]*BETA_V;  //Only Baseline, Ismale, and Weight
 
