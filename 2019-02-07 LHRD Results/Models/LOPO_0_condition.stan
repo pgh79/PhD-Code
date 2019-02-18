@@ -41,6 +41,15 @@ data{
   
   //Scaled concentration in mg/L
   real<lower=0> C_hat[N];
+  
+  
+  //Held out data
+  int<lower=0> N_test;
+  int<lower=0> p_test;
+  vector[N_test] C_hat_test;
+  real<lower=0> times_test[N_test];
+  row_vector[p_test] X_test;
+  
 }
 parameters{
   // parameter: V Volume
@@ -138,8 +147,27 @@ model{
 }
 generated quantities{
   real C_ppc[N];
-  real LogLik[N];
+  vector[N_test] C_pred;
+  vector[N_test] error;
+  real RMSE;
+  real MAE;
+  vector[N_test] relative_error;
+  
   
   C_ppc = lognormal_rng(log(C), sigma);
-  LogLik = lognormal_lpdf(C_hat | log(C), sigma);
+  
+  for (i in 1:N_test)
+    C_pred[i] = PK_profile(times_test[i] - phi,
+                    D,
+                    exp(X_test[{1,3,5}]*BETA_V),
+                    exp(X_test[{1,3,4,5}]*BETA_ka),
+                    exp(X_test*BETA_k)
+                    ); 
+                    
+  error = C_hat_test - C_pred;
+  RMSE = sqrt((error'*error)/N_test);
+  MAE = mean(fabs(error));
+  
+  for (i in 1:N_test)
+    relative_error[i] = fabs(error[i])/C_hat_test[i];
 }

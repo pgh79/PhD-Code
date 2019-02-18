@@ -24,7 +24,7 @@ p = dim(X)[2]
 times = df$Time
 C_hat = df$Concentration_scaled
 
-file.name = "Model Data/LOPO_no_conditioning"
+file.name = "Model Data/core_model"
 rstan::stan_rdump(c(
   "D",
   "N_patients",
@@ -37,7 +37,7 @@ rstan::stan_rdump(c(
 ),file = file.name)
 input_data <- read_rdump(file.name)
 
-fit = stan('Models/LOPO_no_conditioning.stan',
+fit = stan('Models/core_model.stan',
            data = input_data,
            chains = 12,
            seed = 10090908,
@@ -79,3 +79,16 @@ df %>%
   geom_abline()+
   geom_smooth(aes(Concentration_scaled, pred))
 
+
+library("loo")
+
+# Extract pointwise log-likelihood and compute LOO
+log_lik_1 <- extract_log_lik(fit, merge_chains = FALSE)
+
+# as of loo v2.0.0 we can optionally provide relative effective sample sizes
+# when calling loo, which allows for better estimates of the PSIS effective
+# sample sizes and Monte Carlo error
+r_eff <- relative_eff(exp(log_lik_1)) 
+
+loo_1 <- loo(log_lik_1, r_eff = r_eff, cores = 2)
+print(loo_1)
