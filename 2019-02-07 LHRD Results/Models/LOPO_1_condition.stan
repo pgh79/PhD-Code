@@ -48,6 +48,7 @@ data{
   vector[N_test] C_hat_test;
   real<lower=0> times_test[N_test];
   row_vector[p] X_test;
+  int<lower=0> ID;
   
 }
 parameters{
@@ -159,9 +160,9 @@ generated quantities{
   for (i in 1:N_test)
     C_pred[i] = PK_profile(times_test[i] - phi,
                     D,
-                    exp(X_test[{1,3,5}]*BETA_V),
-                    exp(X_test[{1,3,4,5}]*BETA_ka),
-                    exp(X_test*BETA_k)
+                    exp(X_test[{1,3,5}]*BETA_V + z_V[ID]*SIGMA_V),
+                    exp(X_test[{1,3,4,5}]*BETA_ka + z_ka[ID]*SIGMA_ka),
+                    exp(X_test*BETA_k + z_k[ID]*SIGMA_k)
                     ); 
                     
   error = C_hat_test - C_pred;
