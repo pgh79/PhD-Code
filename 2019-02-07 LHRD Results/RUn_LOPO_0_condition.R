@@ -1,26 +1,26 @@
 library(rstan)
 library(glue)
 source('stan_utilities.R')
-source('LOPO_tools.R')
+source('LOPO.R')
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
 results = list()
-input_data = rstan::read_rdump('Model Data/core_model')
+input_data = rstan::read_rdump('Model Data/core_model_raw_data')
 N = input_data$N_patients
 for (i in 1:N){
   
   phrase = glue('Working on Leave Patient {i} Out')
   print(phrase)
   iter = list()
-  lopo_data = LeaveOnePatientOut(input_data = input_data, i = i, t = 0)
+  lopo_data = LeaveOnePatientOut(input_data,i, 0)
   
   
   fit = stan('Models/LOPO_0_condition.stan',
              data = lopo_data,
              chains = 12,
              seed = 10090908,
-             refresh = 0,
+             # refresh = 0,
              control = list(max_treedepth = 13,adapt_delta = 0.8))
   
   
