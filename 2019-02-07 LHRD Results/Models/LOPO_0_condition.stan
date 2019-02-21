@@ -22,49 +22,50 @@ data{
   real D;
   
   //Num obs
-  int<lower=1> N_train;
+  int<lower=1> N;
   
   //Num distinct patients
-  int<lower=1> N_patients_train;
+  int<lower=1> N_patients;
   
   //Patient IDs
-  int<lower=1> patient_ID_train[N_train];
+  int<lower=1> patient_ID[N];
   
   //Num covariates
   int<lower=1> p;
   
   //Design Matrix
-  matrix[N_patients_train,p] X_train;
+  matrix[N_patients,p] X;
   
   //Sample times
-  real<lower=0> times_train[N_train];
+  real<lower=0> times[N];
   
   //Scaled concentration in mg/L
-  real<lower=0> C_hat_train[N_train];
+  real<lower=0> C_hat[N];
   
   
   //Held out data
   int<lower=0> N_test;
+  int<lower=0> p_test;
   vector[N_test] C_hat_test;
   real<lower=0> times_test[N_test];
-  row_vector[p] X_test;
+  row_vector[p_test] X_test;
   
 }
 parameters{
   // parameter: V Volume
   vector[3] BETA_V;
   real<lower=0> SIGMA_V;
-  vector[N_patients_train] z_V;
+  vector[N_patients] z_V;
   
   // parameter: k Elimination
   vector[p] BETA_k;
   real<lower=0> SIGMA_k;
-  vector[N_patients_train] z_k;
+  vector[N_patients] z_k;
   
   // parameter: ka Absorption
   vector[4] BETA_ka;
   real<lower=0> SIGMA_ka;
-  vector[N_patients_train] z_ka;
+  vector[N_patients] z_ka;
   
   //parameter: noise in likelihood
   real<lower=0> sigma;
@@ -79,36 +80,36 @@ parameters{
   
   real<lower=0,upper=1> phi; //Use to measure population delay.
   real<lower=10> lambda;
-  real<lower=0,upper=1> delay_raw[N_patients_train]; //Each patient has their own delay
+  real<lower=0,upper=1> delay_raw[N_patients]; //Each patient has their own delay
 }
 transformed parameters{
   //Predicted concentrations
-  real C[N_train];
+  real C[N];
   
   //Parameters for each patient
-  vector[N_patients_train] k_a;
-  vector[N_patients_train] k;
-  vector[N_patients_train] V;
+  vector[N_patients] k_a;
+  vector[N_patients] k;
+  vector[N_patients] V;
   
   //Parameter means
-  vector[N_patients_train] MU_KA;
-  vector[N_patients_train] MU_K;
-  vector[N_patients_train] MU_V;
+  vector[N_patients] MU_KA;
+  vector[N_patients] MU_K;
+  vector[N_patients] MU_V;
   
-  MU_KA = X_train[,{1,3,4,5}]*BETA_ka;
-  MU_K = X_train*BETA_k;
-  MU_V = X_train[,{1,3,5}]*BETA_V;  //Only Baseline, Ismale, and Weight
+  MU_KA = X[,{1,3,4,5}]*BETA_ka;
+  MU_K = X*BETA_k;
+  MU_V = X[,{1,3,5}]*BETA_V;  //Only Baseline, Ismale, and Weight
 
   k_a = exp(MU_KA + z_ka*SIGMA_ka);
   k = exp(MU_K + z_k*SIGMA_k);
   V = exp(MU_V + z_V*SIGMA_V);
   
-  for (i in 1:N_train){
-    C[i] = PK_profile(times_train[i] - 0.5*delay_raw[patient_ID_train[i]],
+  for (i in 1:N){
+    C[i] = PK_profile(times[i] - 0.5*delay_raw[patient_ID[i]],
                       D,
-                      V[patient_ID_train[i]],
-                      k_a[patient_ID_train[i]],
-                      k[patient_ID_train[i]]
+                      V[patient_ID[i]],
+                      k_a[patient_ID[i]],
+                      k[patient_ID[i]]
                       );  
   }
   
@@ -127,7 +128,6 @@ model{
   SIGMA_k ~ normal(0,1);
   SIGMA_ka ~normal(0,1);
   sigma ~ normal(0,1);  
-  
   //Random Effects
   z_V ~ normal(0,1);
   z_k ~ normal(0,1);
@@ -142,11 +142,11 @@ model{
   delay_raw ~ beta(lambda * phi, lambda * (1 - phi));
 
   // Likelihood
-  C_hat_train ~ lognormal(log(C), sigma);
+  C_hat ~ lognormal(log(C), sigma);
   
 }
 generated quantities{
-  real C_ppc[N_train];
+  real C_ppc[N];
   vector[N_test] C_pred;
   vector[N_test] error;
   real RMSE;
