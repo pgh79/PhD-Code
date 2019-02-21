@@ -158,7 +158,7 @@ generated quantities{
   C_ppc = lognormal_rng(log(C), sigma);
   
   for (i in 1:N_test)
-    C_pred[i] = PK_profile(times_test[i] - phi,
+    C_pred[i] = PK_profile(times_test[i] - 0.5*delay_raw[ID],
                     D,
                     exp(X_test[{1,3,5}]*BETA_V + z_V[ID]*SIGMA_V),
                     exp(X_test[{1,3,4,5}]*BETA_ka + z_ka[ID]*SIGMA_ka),
