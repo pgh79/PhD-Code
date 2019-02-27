@@ -123,10 +123,10 @@ model{
   BETA_ka ~ normal(0,0.5);
   
   //Noise
-  SIGMA_V ~ normal(0,1);
-  SIGMA_k ~ normal(0,1);
-  SIGMA_ka ~normal(0,1);
-  sigma ~ normal(0,1);  
+  SIGMA_V ~ cauchy(0,2);
+  SIGMA_k ~ cauchy(0,2);
+  SIGMA_ka ~cauchy(0,2);
+  sigma ~ cauchy(0,2);  
   //Random Effects
   z_V ~ normal(0,1);
   z_k ~ normal(0,1);

@@ -10,7 +10,7 @@ input_data = rstan::read_rdump('Model Data/core_model_raw_data')
 N = input_data$N_patients
 
 divs = 0
-for (t in c(0.5,1)){
+t = c(0.5,1,2,4,6,10)
   for (i in 1:N){
     
     phrase = glue('Working on Leave Patient {i} Out')
@@ -25,11 +25,10 @@ for (t in c(0.5,1)){
                chains = 12,
                seed = 10090908,
                refresh = 0,
-               control = list(max_treedepth = 15,adapt_delta = 0.999))
+               control = list(max_treedepth = 20,adapt_delta = 0.999))
     
     
-    # check_all_diagnostics(fit)
-    divs  = divs + sum(get_sampler_params(fit, inc_warmup=FALSE)[[1]][,'divergent__'])
+    check_all_diagnostics(fit)
     p = rstan::extract(fit)
     
     iter$RMSE = mean(p$RMSE)
@@ -40,8 +39,6 @@ for (t in c(0.5,1)){
   }
   
   
-  saveRDS(results, glue('LOPO Results/results_{t}_condition_test') )
-}
+  saveRDS(results, glue('LOPO Results/results_4_condition_test') )
 
 
-print(divs)
