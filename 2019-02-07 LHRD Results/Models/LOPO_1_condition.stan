@@ -3,31 +3,43 @@
 // Log-normal likelihood
 // Author: Demetri Pananos
 
-//Model should fit on N-1 patients
-//Then predict on held out patient
-//without conditioning on any held out patient data
+
+//------------------------Introduction------------------------
+//The goal of the analysis is as follows:  I have 36 patients, each have 8 
+// time points at which their blood is sampled and the concentration of a drug
+// is measured.  I'm intereted in predictive accuracy as measured by MAE or RMSE
+
+//In this model, I am leaving some data out to do a cross validation.  This
+//model will condition on some of the data from a patient and will test on the 
+//remaining data from that patient.
+//So let's say I fit my model on 35 patients + 1 sample from the patient I've
+//held out, and then the model rpedicts on the remianing 7 points from 
+//the left out patient.
+
 
 functions {
   
   // PK Function.  Solution to differential equation
   // y' = ka*(D/V)exp(-ka*t) - k*y, y(0) = 0
+  //This function is what we think the drug concentrtions should look like
+  //over time.  The model estimates the parameters V,k_a, and k.
   real PK_profile(real t, real D, real V, real k_a, real k) {
-    return (D / V) * (k_a / (k_a - k))
-            * ( exp(- k * t) - exp(-k_a * t) );
+    return (D / V) * (k_a / (k_a - k)) * ( exp(- k * t) - exp(-k_a * t) );
   }
 }
 data{
-  
+  //The following are what I provide the program
   //Total Dose in mg
   real D;
   
-  //Num obs
+  //Num obs for training data
   int<lower=1> N_train;
   
   //Num distinct patients
   int<lower=1> N_patients_train;
   
   //Patient IDs
+  //used to index parameters in the model.
   int<lower=1> patient_ID_train[N_train];
   
   //Num covariates
@@ -44,28 +56,36 @@ data{
   
   
   //Held out data
+  
+  //Number of test points
   int<lower=0> N_test;
+  //Test concentrations
   vector[N_test] C_hat_test;
+  //test times
   real<lower=0> times_test[N_test];
+  //test covariates
   row_vector[p] X_test;
+  //the ID of the patient left out.
   int<lower=0> ID;
   
 }
 parameters{
+  
+  //These are model parameters we will estimate
   // parameter: V Volume
-  vector[3] BETA_V;
+  vector[3] BETA_V; //Fixed effets
   real<lower=0> SIGMA_V;
-  vector[N_patients_train] z_V;
+  vector[N_patients_train] z_V; //Random Effects
   
-  // parameter: k Elimination
-  vector[p] BETA_k;
+  // parameter: k Drug Elimination
+  vector[p] BETA_k; //Fixed effects
   real<lower=0> SIGMA_k;
-  vector[N_patients_train] z_k;
+  vector[N_patients_train] z_k; //Random effects
   
-  // parameter: ka Absorption
-  vector[4] BETA_ka;
+  // parameter: ka Drug Absorption
+  vector[4] BETA_ka; //Fixed effects
   real<lower=0> SIGMA_ka;
-  vector[N_patients_train] z_ka;
+  vector[N_patients_train] z_ka; //random effects
   
   //parameter: noise in likelihood
   real<lower=0> sigma;
@@ -83,10 +103,13 @@ parameters{
   real<lower=0,upper=1> delay_raw[N_patients_train]; //Each patient has their own delay
 }
 transformed parameters{
-  //Predicted concentrations
+  
+  //Here is where we compute the concentrations for each patient
+  
+  //Training concentrations
   real C[N_train];
   
-  //Parameters for each patient
+  //Parameters for each patient.  Each patient has their own V,k,k_
   vector[N_patients_train] k_a;
   vector[N_patients_train] k;
   vector[N_patients_train] V;
@@ -96,14 +119,18 @@ transformed parameters{
   vector[N_patients_train] MU_K;
   vector[N_patients_train] MU_V;
   
-  MU_KA = X_train[,{1,3,4,5}]*BETA_ka;
-  MU_K = X_train*BETA_k;
-  MU_V = X_train[,{1,3,5}]*BETA_V;  //Only Baseline, Ismale, and Weight
+  MU_KA = X_train[,{1,3,4,5}]*BETA_ka;  //Mean of the ka distribution
+  MU_K = X_train*BETA_k; //mean of the k distribution
+  MU_V = X_train[,{1,3,5}]*BETA_V;  //Mean of the V distribution.
+                                    //Only uses Baseline, Ismale, and Weight
 
-  k_a = exp(MU_KA + z_ka*SIGMA_ka);
+  //Posit that the parameters are lognormal with mean MU
+  k_a = exp(MU_KA + z_ka*SIGMA_ka); 
   k = exp(MU_K + z_k*SIGMA_k);
   V = exp(MU_V + z_V*SIGMA_V);
   
+  
+  //compute the concentrations at each time.
   for (i in 1:N_train){
     C[i] = PK_profile(times_train[i] - 0.5*delay_raw[patient_ID_train[i]],
                       D,
@@ -147,6 +174,8 @@ model{
   
 }
 generated quantities{
+  
+  //Here is where we do the testing
   real C_ppc[N_train];
   vector[N_test] C_pred;
   vector[N_test] error;
@@ -154,9 +183,20 @@ generated quantities{
   real MAE;
   vector[N_test] relative_error;
   
-  
+  //Posterior predictive check, ignore this, not relevant
   C_ppc = lognormal_rng(log(C), sigma);
   
+  
+  //Below, I predict the concentration for the held out data
+  //From the data I used to train on, I have an estimate of:
+  // -Patient's delay
+  // -Patient's V
+  // -Patient's k
+  // -Patient's k_a
+  // Use these estimates in the prediction
+  // Note that X_test*BETA_i is the mean of the log normal for somoene with
+  // covariates X_test, and z_i[ID]SIGMA_i is the random effect for that
+  // particular person
   for (i in 1:N_test)
     C_pred[i] = PK_profile(times_test[i] - 0.5*delay_raw[ID],
                     D,
@@ -164,6 +204,8 @@ generated quantities{
                     exp(X_test[{1,3,4,5}]*BETA_ka + z_ka[ID]*SIGMA_ka),
                     exp(X_test*BETA_k + z_k[ID]*SIGMA_k)
                     ); 
+                    
+  //error metrics
                     
   error = C_hat_test - C_pred;
   RMSE = sqrt((error'*error)/N_test);

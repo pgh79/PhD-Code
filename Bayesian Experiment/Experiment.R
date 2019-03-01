@@ -15,7 +15,7 @@ PK_profile = Vectorize(PK_profile)
 #Time points to sample, as in real data
 t = c(0.5,1,2,4,6,8,10,12)
 #Ratio of excretive and absorptive rates.  Higher means you get rid of it faster
-alpha = seq(0.1, 0.45, 0.01)
+alpha = seq(0.1, 0.5, 0.01)
 #Make the dataset with some noise
 set.seed(19920908)
 data = tibble(
@@ -26,6 +26,12 @@ data = tibble(
   y = map(y_true, ~rlnorm(length(.x), log(.x), 0.15))
 ) %>% 
 unnest()
+
+data %>% 
+  ggplot(aes(t,y_true, color = factor(alpha), group = ID))+
+  geom_line()+
+  guides(color = F)+
+  scale_color_brewer(palette = 'RdBu')
 
 
 #---- Stan First ----
@@ -120,5 +126,4 @@ x %>%
   mutate(diff = MAE_first - MAE_last) %>% 
   ggplot(aes(alpha,diff))+
   geom_line()+
-  geom_hline(yintercept = 0)+
-  geom_smooth()
+  geom_hline(yintercept = 0)
