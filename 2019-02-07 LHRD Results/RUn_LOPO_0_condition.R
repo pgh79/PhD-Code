@@ -21,7 +21,6 @@ for (i in 1:N){
              data = lopo_data,
              chains = 12,
              seed = 10090908,
-             # refresh = 0,
              control = list(max_treedepth = 13,adapt_delta = 0.8))
   
   

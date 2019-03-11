@@ -1,6 +1,7 @@
 library(tidyverse)
 
 files = list.files('LOPO Results', full.names = T)
+files = files[map_lgl(files,~!grepl('posterior', .x) )]
 
 datasets = map(files, readRDS)
 
