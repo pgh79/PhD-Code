@@ -25,6 +25,15 @@ check_all_diagnostics(fit)
 
 p = rstan::extract(fit)
 
+
+# Vis posterior ----
+
+bayesplot::mcmc_areas(as.matrix(fit), regex_pars = 'SIGMA')
+
+b = colnames(as.matrix(fit))
+b = b[map_lgl(b,~grepl('BETA',.x))]
+as.matrix(fit)[,b] %>% cov() %>% corrplot::corrplot()
+
 C_pred = p$C %>% apply(., 2 , mean)
 C_q = p$C_ppc %>% 
   apply(., 2 , function(x) quantile(x, c(0.025, 0.975))) %>% 
@@ -54,7 +63,8 @@ df %>%
   ggplot()+
   geom_pointrange(aes(Concentration_scaled, pred, ymin = ymin, ymax = ymax), alpha = 0.25)+
   geom_abline()+
-  geom_smooth(aes(Concentration_scaled, pred))
+  geom_smooth(aes(Concentration_scaled, pred), method= 'lm')+
+  theme(aspect.ratio = 1)
 
 
 library("loo")

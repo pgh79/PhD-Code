@@ -7,7 +7,7 @@ LeaveOnePatientOut <- function(data, test_patient, test_time){
   list2env(input_data, envir = env)
   
   #test critera for the LOPO
-  no_condition_on = (times %in% test_time) & (patient_ID==test_patient)
+  no_condition_on =  (patient_ID==test_patient)
   
   #Make the test_data
   C_hat_test = C_hat[no_condition_on]
@@ -43,5 +43,3 @@ LeaveOnePatientOut <- function(data, test_patient, test_time){
   return(model_data)
 }
 
-
-LeaveOnePatientOut(input_data, 0, 0)
