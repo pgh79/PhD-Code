@@ -5,8 +5,6 @@ library(tidyverse)
 library(rstan)
 source('stan_utilities.R')
 
-indata = rstan::read_rdump('Model Data/core_model_scaled_data')
-
 LOPO<- function(data,test_patient,train_times){
 
   env = environment()
@@ -58,22 +56,67 @@ fit.model<- function(f){
       
       
       fit = rstan::stan('Models/LOPO_1_condition_new.stan', 
-                        data = f$training_data,
+                        data = f,
+                        chains = 16,
                         control = list(max_treedepth = 13,adapt_delta = 0.9),)
       
       # check_all_diagnostics(fit)
       
       p = rstan::extract(fit)
       ypred = apply(p$C_pred,2,mean)
-      y = f$testing_data
       
-      return(y - ypred)
+      return(ypred)
       
     }
 
 
-crossing(patients = 1:3) %>% 
-  mutate(times = list(c(0.5))) %>% 
-  mutate(f = map2(patients,times, ~make.data(indata,.x,list(.y)))) %>% 
-  mutate(results = map(f,fit.model))
+indata = rstan::read_rdump('Model Data/core_model_scaled_data')
+
+
+#Condition on first----
+tibble(paitents = 1:36, 
+       times = list(c(0.5)), 
+       )  %>% 
+  mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
+         ypred = map(LOPOData,'training_data'),
+         ytest = map(LOPOData,'testing_data')) %>% 
+  mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
+  saveRDS('LOPO Results/condition_on_first.RDS')
+
+  
+
+#Condition on first two----
+tibble(paitents = 1:36, 
+       times = list(c(0.5,1)), 
+)  %>% 
+  mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
+         ypred = map(LOPOData,'training_data'),
+         ytest = map(LOPOData,'testing_data')) %>% 
+  mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
+  saveRDS('LOPO Results/condition_on_first_two.RDS')
+
+
+
+#Condition on first last----
+tibble(paitents = 1:36, 
+       times = list(c(12)), 
+)  %>% 
+  mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
+         ypred = map(LOPOData,'training_data'),
+         ytest = map(LOPOData,'testing_data')) %>% 
+  mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
+  saveRDS('LOPO Results/condition_on_last.RDS')
+
+
+
+#Condition on first last two----
+tibble(paitents = 1:36, 
+       times = list(c(10,12)), 
+)  %>% 
+  mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
+         ypred = map(LOPOData,'training_data'),
+         ytest = map(LOPOData,'testing_data')) %>% 
+  mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
+  saveRDS('LOPO Results/condition_on_last_two.RDS')
+
 
