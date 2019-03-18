@@ -4,6 +4,8 @@
 library(tidyverse)
 library(rstan)
 source('stan_utilities.R')
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
 
 LOPO<- function(data,test_patient,train_times){
 
@@ -57,8 +59,8 @@ fit.model<- function(f){
       
       fit = rstan::stan('Models/LOPO_1_condition_new.stan', 
                         data = f,
-                        chains = 16,
-                        control = list(max_treedepth = 13,adapt_delta = 0.9),)
+                        chains = 4,
+                        control = list(max_treedepth = 13,adapt_delta = 0.99),)
       
       # check_all_diagnostics(fit)
       
@@ -78,10 +80,12 @@ tibble(paitents = 1:36,
        times = list(c(0.5)), 
        )  %>% 
   mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
-         ypred = map(LOPOData,'training_data'),
-         ytest = map(LOPOData,'testing_data')) %>% 
+         training_data = map(LOPOData,'training_data'),
+         ypred = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data')
+         ) %>% 
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
-  saveRDS('LOPO Results/condition_on_first.RDS')
+  saveRDS('LOPO Data/condition_on_first.RDS')
 
   
 
@@ -90,33 +94,51 @@ tibble(paitents = 1:36,
        times = list(c(0.5,1)), 
 )  %>% 
   mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
-         ypred = map(LOPOData,'training_data'),
-         ytest = map(LOPOData,'testing_data')) %>% 
+         training_data = map(LOPOData,'training_data'),
+         ypred = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data')
+  ) %>% 
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
-  saveRDS('LOPO Results/condition_on_first_two.RDS')
+  saveRDS('LOPO Data/condition_on_first_two.RDS')
 
 
-
-#Condition on first last----
+#Condition on last----
 tibble(paitents = 1:36, 
        times = list(c(12)), 
 )  %>% 
   mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
-         ypred = map(LOPOData,'training_data'),
-         ytest = map(LOPOData,'testing_data')) %>% 
+         training_data = map(LOPOData,'training_data'),
+         ypred = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data')
+  ) %>% 
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
-  saveRDS('LOPO Results/condition_on_last.RDS')
+  saveRDS('LOPO Data/condition_on_last.RDS')
 
 
 
-#Condition on first last two----
+#Condition on last two----
 tibble(paitents = 1:36, 
        times = list(c(10,12)), 
 )  %>% 
   mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
-         ypred = map(LOPOData,'training_data'),
-         ytest = map(LOPOData,'testing_data')) %>% 
+         training_data = map(LOPOData,'training_data'),
+         ypred = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data')
+  ) %>% 
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
-  saveRDS('LOPO Results/condition_on_last_two.RDS')
+  saveRDS('LOPO Data/condition_on_last_two.RDS')
 
+
+
+#Condition on first and last----
+tibble(paitents = 1:36, 
+       times = list(c(0.5,12)), 
+)  %>% 
+  mutate(LOPOData = map2(paitents,times,~LOPO(indata,.x,.y)),
+         training_data = map(LOPOData,'training_data'),
+         ypred = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data')
+  ) %>% 
+  mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
+  saveRDS('LOPO Data/condition_on_last_two.RDS')
 
