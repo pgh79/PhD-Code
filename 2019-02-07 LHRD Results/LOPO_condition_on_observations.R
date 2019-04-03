@@ -65,14 +65,17 @@ fit.model<- function(f){
       # check_all_diagnostics(fit)
       
       p = rstan::extract(fit)
+      
+      params = lapply(p, mean)
+      
       ypred = apply(p$C_pred,2,mean)
       
-      return(ypred)
+      
+      return(list(ypred=ypred, params = params))
       
     }
 
 
-indata = rstan::read_rdump('Model Data/core_model_scaled_data')
 
 
 #Condition on first----
@@ -81,8 +84,10 @@ tibble(patients = 1:36,
        )  %>% 
   mutate(LOPOData = map2(patients,times,~LOPO(indata,.x,.y)),
          training_data = map(LOPOData,'training_data'),
-         ypred = map(training_data, fit.model),
-         ytest = map(LOPOData,'testing_data')
+         results = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data'),
+         ypred = map(results,'ypred'),
+         params = map(results,'params')
          ) %>% 
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
   saveRDS('LOPO Data/condition_on_first.RDS')
@@ -95,8 +100,10 @@ tibble(patients = 1:36,
 )  %>% 
   mutate(LOPOData = map2(patients,times,~LOPO(indata,.x,.y)),
          training_data = map(LOPOData,'training_data'),
-         ypred = map(training_data, fit.model),
-         ytest = map(LOPOData,'testing_data')
+         results = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data'),
+         ypred = map(results,'ypred'),
+         params = map(results,'params')
   ) %>% 
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
   saveRDS('LOPO Data/condition_on_first_two.RDS')
@@ -108,8 +115,10 @@ tibble(patients = 1:36,
 )  %>% 
   mutate(LOPOData = map2(patients,times,~LOPO(indata,.x,.y)),
          training_data = map(LOPOData,'training_data'),
-         ypred = map(training_data, fit.model),
-         ytest = map(LOPOData,'testing_data')
+         results = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data'),
+         ypred = map(results,'ypred'),
+         params = map(results,'params')
   ) %>% 
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
   saveRDS('LOPO Data/condition_on_last.RDS')
@@ -122,9 +131,11 @@ tibble(patients = 1:36,
 )  %>% 
   mutate(LOPOData = map2(patients,times,~LOPO(indata,.x,.y)),
          training_data = map(LOPOData,'training_data'),
-         ypred = map(training_data, fit.model),
-         ytest = map(LOPOData,'testing_data')
-  ) %>% 
+         results = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data'),
+         ypred = map(results,'ypred'),
+         params = map(results,'params')
+  ) %>%  
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
   saveRDS('LOPO Data/condition_on_last_two.RDS')
 
@@ -136,9 +147,11 @@ tibble(patients = 1:36,
 )  %>% 
   mutate(LOPOData = map2(patients,times,~LOPO(indata,.x,.y)),
          training_data = map(LOPOData,'training_data'),
-         ypred = map(training_data, fit.model),
-         ytest = map(LOPOData,'testing_data')
-  ) %>% 
+         results = map(training_data, fit.model),
+         ytest = map(LOPOData,'testing_data'),
+         ypred = map(results,'ypred'),
+         params = map(results,'params')
+  ) %>%  
   mutate(err = map2(ytest, ypred, ~.x-.y)) %>% 
   saveRDS('LOPO Data/condition_on_first_and_last.RDS')
 

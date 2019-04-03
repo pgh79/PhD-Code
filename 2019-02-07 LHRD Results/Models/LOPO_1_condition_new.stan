@@ -185,12 +185,23 @@ generated quantities{
   // Note that X_test*BETA_i is the mean of the log normal for somoene with
   // covariates X_test, and z_i[ID]SIGMA_i is the random effect for that
   // particular person
+  
+  real delay_test;
+  real V_test;
+  real ka_test;
+  real k_test;
+  
+  delay_test = 0.5*delay_raw[ID];
+  V_test = exp(X_test[{1,3,5}]*BETA_V + z_V[ID]*SIGMA_V);
+  ka_test = exp(X_test[{1,3,4,5}]*BETA_ka + z_ka[ID]*SIGMA_ka);
+  k_test = exp(X_test*BETA_k + z_k[ID]*SIGMA_k);
+  
   for (i in 1:N_test)
-    C_pred[i] = PK_profile(times_test[i] - 0.5*delay_raw[ID],
+    C_pred[i] = PK_profile(times_test[i] -delay_test,
                     D,
-                    exp(X_test[{1,3,5}]*BETA_V + z_V[ID]*SIGMA_V),
-                    exp(X_test[{1,3,4,5}]*BETA_ka + z_ka[ID]*SIGMA_ka),
-                    exp(X_test*BETA_k + z_k[ID]*SIGMA_k)
+                    V_test,
+                    ka_test,
+                    k_test
                     ); 
                     
 }
