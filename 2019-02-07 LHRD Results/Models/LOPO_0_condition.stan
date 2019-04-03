@@ -148,15 +148,24 @@ model{
 generated quantities{
   real C_ppc[N_train];
   vector[N_test] C_pred;
+  real V_test;
+  real k_test;
+  real ka_test;
+  real delay_test;
+  
+  delay_test = phi;
+  V_test = exp(X_test[{1,3,5}]*BETA_V);
+  ka_test = exp(X_test[{1,3,4,5}]*BETA_ka);
+  k_test = exp(X_test*BETA_k);
   
   
   C_ppc = lognormal_rng(log(C), sigma);
   
   for (i in 1:N_test)
-    C_pred[i] = PK_profile(times_test[i] - phi,
+    C_pred[i] = PK_profile(times_test[i] - delay_test,
                     D,
-                    exp(X_test[{1,3,5}]*BETA_V),
-                    exp(X_test[{1,3,4,5}]*BETA_ka),
-                    exp(X_test*BETA_k)
+                    V_test,
+                    ka_test,
+                    k_test
                     ); 
 }

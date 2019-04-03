@@ -20,9 +20,10 @@ fit.model<- function(f){
   # check_all_diagnostics(fit)
   
   p = rstan::extract(fit)
+  params = lapply(p, mean)
   ypred = apply(p$C_pred,2,mean)
   
-  return(ypred)
+  return(list(ypred = ypred, params = params))
   
 }
 
@@ -31,7 +32,9 @@ tibble(patients = 1:36,
 )  %>% 
   mutate(LOPOData = map2(patients,times,~LeaveOnePatientOut(indata,.x,.y)),
          ytest = map(LOPOData,'C_hat_test'),
-         ypred = map(LOPOData,fit.model),
+         results = map(LOPOData,fit.model),
+         ypred = map(results, 'ypred'),
+         params = map(results,'params'),
          err = map2(ytest,ypred,~.x-.y)) %>% 
   saveRDS('LOPO Data/condition_on_none.RDS')
 
