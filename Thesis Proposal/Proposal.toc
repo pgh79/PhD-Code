@@ -21,4 +21,9 @@
 \contentsline {subsubsection}{Formalization of Sequential Decision Making}{13}
 \contentsline {subsubsection}{Policies}{13}
 \contentsline {subsubsection}{Goals for Learning}{14}
-\contentsline {section}{\textbf {References}}{15}
+\contentsline {section}{\numberline {3}Proposed Research}{15}
+\contentsline {subsection}{\numberline {3.1}Justification for Adopting a Bayesian Framework}{15}
+\contentsline {subsection}{\numberline {3.2}Bayesian Pharmacokinetic Models}{15}
+\contentsline {subsection}{\numberline {3.3}Adaptive Sampling}{16}
+\contentsline {subsection}{\numberline {3.4}Adaptive Control}{16}
+\contentsline {section}{\textbf {References}}{17}

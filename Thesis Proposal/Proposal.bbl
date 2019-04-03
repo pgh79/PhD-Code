@@ -94,7 +94,36 @@ Richard~S Sutton and Andrew~G Barto.
 
 \bibitem{lizotte2017reinforcement}
 Daniel~J. Lizotte.
-\newblock {\em Reinforcement Learning}, pages 1--9.
+\newblock {\em Wiley StatsRef: Statistics Reference Online}, chapter
+  Reinforcement Learning.
 \newblock Wiley, 2017.
+
+\bibitem{tornoe2004non}
+Christoffer~W Torn{\o}e, Henrik Agers{\o}, E~Niclas Jonsson, Henrik Madsen, and
+  Henrik~A Nielsen.
+\newblock Non-linear mixed-effects pharmacokinetic/pharmacodynamic modelling in
+  nlme using differential equations.
+\newblock {\em Computer Methods and Programs in Biomedicine}, 76(1):31--40,
+  2004.
+
+\bibitem{carpenter2017stan}
+Bob Carpenter, Andrew Gelman, Matthew~D Hoffman, Daniel Lee, Ben Goodrich,
+  Michael Betancourt, Marcus Brubaker, Jiqiang Guo, Peter Li, and Allen
+  Riddell.
+\newblock Stan: A probabilistic programming language.
+\newblock {\em Journal of statistical software}, 76(1), 2017.
+
+\bibitem{gelman2013philosophy}
+Andrew Gelman and Cosma~Rohilla Shalizi.
+\newblock Philosophy and the practice of bayesian statistics.
+\newblock {\em British Journal of Mathematical and Statistical Psychology},
+  66(1):8--38, 2013.
+
+\bibitem{tirona2018apixaban}
+Rommel~G Tirona, Zahra Kassam, Ruth Strapp, Mala Ramu, Catherine Zhu, Melissa
+  Liu, Ute~I Schwarz, Richard~B Kim, Bandar Al-Judaibi, and Melanie~D Beaton.
+\newblock Apixaban and rosuvastatin pharmacokinetics in nonalcoholic fatty
+  liver disease.
+\newblock {\em Drug Metabolism and Disposition}, 46(5):485--492, 2018.
 
 \end{thebibliography}

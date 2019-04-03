@@ -1,4 +1,7 @@
 library(tidyverse)
+library(Metrics)
+
+
 
 experiment_names = tibble(name = list.files('LOPO Data', full.names = F)) %>% 
                    mutate(experiment = as.character(seq_along(name)) )
@@ -6,10 +9,10 @@ experiment_names = tibble(name = list.files('LOPO Data', full.names = F)) %>%
 results = list.files('LOPO Data', full.names = T) %>% 
   map(readRDS) %>% 
   map_df(., ~.x %>% 
-          select(1,7) %>% 
+          select(patients,err) %>% 
           unnest() %>% 
           group_by(patients) %>% 
-          summarise(mae = mean(abs(err)))
+          summarise(rmse = mean(abs(err)))
                     , .id = 'experiment') 
 
 
@@ -20,6 +23,30 @@ results %>%
                   map_chr(., 1)
          ) %>%
   group_by(name) %>% 
-  summarise(m = mean(mae)) %>% 
-  arrange(m)
+  summarise(error.metric = mean(rmse)) %>% 
+  arrange(desc(error.metric))
   
+
+results = list.files('LOPO Data', full.names = T)
+
+
+readRDS('LOPO Data/condition_on_last.RDS') %>% 
+  select(patients,ypred,ytest) %>% 
+  mutate(t = list(c(0.5,1,2,4,6,8,10,12))) %>% 
+  unnest() %>% 
+  gather(type,val,-patients,-t) %>% 
+  ggplot(aes(t,val, color = type))+
+  geom_line()+
+  facet_wrap(~patients, scale = 'free_y')+
+  labs(title = 'condition on last')
+
+readRDS('LOPO Data/condition_on_first.RDS') %>% 
+  select(patients,ypred,ytest) %>% 
+  mutate(t = list(c(0.5,1,2,4,6,8,10,12))) %>% 
+  unnest() %>% 
+  gather(type,val,-patients,-t) %>% 
+  ggplot(aes(t,val, color = type))+
+  geom_line()+
+  facet_wrap(~patients, scale = 'free_y')+
+  labs(title = 'condition on first')
+s  

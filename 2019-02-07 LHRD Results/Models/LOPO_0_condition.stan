@@ -148,10 +148,6 @@ model{
 generated quantities{
   real C_ppc[N_train];
   vector[N_test] C_pred;
-  vector[N_test] error;
-  real RMSE;
-  real MAE;
-  vector[N_test] relative_error;
   
   
   C_ppc = lognormal_rng(log(C), sigma);
@@ -163,11 +159,4 @@ generated quantities{
                     exp(X_test[{1,3,4,5}]*BETA_ka),
                     exp(X_test*BETA_k)
                     ); 
-                    
-  error = C_hat_test - C_pred;
-  RMSE = sqrt((error'*error)/N_test);
-  MAE = mean(fabs(error));
-  
-  for (i in 1:N_test)
-    relative_error[i] = fabs(error[i])/C_hat_test[i];
 }

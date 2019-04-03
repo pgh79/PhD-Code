@@ -5,7 +5,7 @@ In this section, I describe pharmacokinetic as it will be used in the proposed r
 
 \subsubsection{Pharmacokinetics v. Pharmacodynamics}
 
-The phases between drug administration and emergence of the desired effect can be broadly placed into one of two areas of study.  The area of study which is concerned with relationship between dose administration and achievement of particular concentrations in the body is known as \textit{pharmacokinetics}, while the area of study concenred with the arrival of the drug at it's site of action, the onset of the desired effect, as well as the magnitude and duration of that effect is known as  \textit{pharmacodynamics} \cite{rosenbaum2016basic}.  
+The phases between drug administration and emergence of the desired effect can be broadly placed into one of two areas of study.  The area of study which is concerned with relationship between dose administration and achievement of particular concentrations in the body is known as \textit{pharmacokinetics}, while the area of study concerned with the arrival of the drug at it's site of action, the onset of the desired effect, as well as the magnitude and duration of that effect is known as  \textit{pharmacodynamics} \cite{rosenbaum2016basic}.  
 
 \subsubsection{A One Compartment Pharmacokinetic Model}
 
@@ -42,7 +42,7 @@ The simplest example of these models is the one compartment pharmacokinetic mode
 	\path[->] (a) edge node {$k_a$} (c);
 	\draw[->] (c) edge node {$k$} (end) ;
 	\end{tikzpicture}
-	\caption{A compartmental diagram for a one compartment pharmacokinetic model.  Arrows indicate the direction of flux.  Flux is proportional to the concentration in each compartment, with proportionality constant indicated over the arrows.}
+	\caption[Pharmacokinetic compartmental diagram]{A compartmental diagram for a one compartment pharmacokinetic model.  Arrows indicate the direction of flux.  Flux is proportional to the concentration in each compartment, with proportionality constant indicated over the arrows.}
 	\label{compartmental_model}
 \end{figure}
 
@@ -62,7 +62,7 @@ The pharmacokinetic model described in \cref{compartmental_model} can be written
 \begin{figure}[h!]
 	\centering
 	\includegraphics{Figures/pkcureves.png}
-	\caption{\Cref{onecompartment_PKPD} under various parameterizations.  Here, $ C(t) $ has been scaled by a factor of $ V/D $ and time has been scaled by a factor of $ k_a $.  This is called a \textit{non-dimensionalization} of the system.  Applied mathematicians non-dimensionalize dynamical systems in order to normalize and compare common properties of different implementations of the same system.  It is clear from this plot that as $ k/k_a \rightarrow 1^- $, the maximum amount of drug in the blood serum compartment will be smaller and will occur sooner after administration.  This is a common property of all systems with constant $D/V$. }
+	\caption[Non-dimensionalized solutions to pharmacokinetic differential equation]{\Cref{onecompartment_PKPD} under various parameterizations.  Here, $ C(t) $ has been scaled by a factor of $ V/D $ and time has been scaled by a factor of $ k_a $.  This is called a \textit{non-dimensionalization} of the system.  Applied mathematicians non-dimensionalize dynamical systems in order to normalize and compare common properties of different implementations of the same system.  It is clear from this plot that as $ k/k_a \rightarrow 1^- $, the maximum amount of drug in the blood serum compartment will be smaller and will occur sooner after administration.  This is a common property of all systems with constant $D/V$. }
 	\label{fig:pkcureves}
 \end{figure}
 

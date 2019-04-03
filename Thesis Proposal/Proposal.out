@@ -1,0 +1,29 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Literature Review}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Differential Equations}{section.2}% 3
+\BOOKMARK [3][-]{section*.4}{What is a Differential Equation}{subsection.2.1}% 4
+\BOOKMARK [3][-]{section*.5}{Existence \046 Uniqueness}{subsection.2.1}% 5
+\BOOKMARK [3][-]{section*.6}{Solutions for Ordinary Differential Equations}{subsection.2.1}% 6
+\BOOKMARK [3][-]{section*.7}{Numerical Solutions to Ordinary Differential Equations}{subsection.2.1}% 7
+\BOOKMARK [3][-]{section*.8}{Quality of a Numerical Solution}{subsection.2.1}% 8
+\BOOKMARK [3][-]{section*.9}{Superior Methods for Numerical Solutions}{subsection.2.1}% 9
+\BOOKMARK [2][-]{subsection.2.2}{Bayesian Statistics}{section.2}% 10
+\BOOKMARK [3][-]{section*.10}{Bayesians v. Frequentists}{subsection.2.2}% 11
+\BOOKMARK [3][-]{section*.11}{Bayesian Networks}{subsection.2.2}% 12
+\BOOKMARK [3][-]{section*.13}{Model Assessment}{subsection.2.2}% 13
+\BOOKMARK [3][-]{section*.14}{Markov Chain Monte Carlo \046 Modern Methods}{subsection.2.2}% 14
+\BOOKMARK [3][-]{section*.15}{Diagnostics for Hamiltonian Monte Carlo}{subsection.2.2}% 15
+\BOOKMARK [2][-]{subsection.2.3}{Pharmacokinetics}{section.2}% 16
+\BOOKMARK [3][-]{section*.16}{Pharmacokinetics v. Pharmacodynamics}{subsection.2.3}% 17
+\BOOKMARK [3][-]{section*.17}{A One Compartment Pharmacokinetic Model}{subsection.2.3}% 18
+\BOOKMARK [3][-]{section*.20}{A Two Compartment Pharmacokinetic Model}{subsection.2.3}% 19
+\BOOKMARK [2][-]{subsection.2.4}{Reinforcement Learning}{section.2}% 20
+\BOOKMARK [3][-]{section*.22}{Formalization of Sequential Decision Making}{subsection.2.4}% 21
+\BOOKMARK [3][-]{section*.24}{Policies}{subsection.2.4}% 22
+\BOOKMARK [3][-]{section*.25}{Goals for Learning}{subsection.2.4}% 23
+\BOOKMARK [1][-]{section.3}{Proposed Research}{}% 24
+\BOOKMARK [2][-]{subsection.3.1}{Justification for Adopting a Bayesian Framework}{section.3}% 25
+\BOOKMARK [2][-]{subsection.3.2}{Bayesian Pharmacokinetic Models}{section.3}% 26
+\BOOKMARK [2][-]{subsection.3.3}{Adaptive Sampling}{section.3}% 27
+\BOOKMARK [2][-]{subsection.3.4}{Adaptive Control}{section.3}% 28
+\BOOKMARK [1][-]{subsection.3.4}{References}{}% 29

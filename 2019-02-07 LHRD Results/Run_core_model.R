@@ -26,6 +26,8 @@ check_all_diagnostics(fit)
 p = rstan::extract(fit)
 
 
+
+
 # Vis posterior ----
 
 bayesplot::mcmc_areas(as.matrix(fit), regex_pars = 'SIGMA')
