@@ -24,6 +24,10 @@
 \contentsline {section}{\numberline {3}Proposed Research}{15}
 \contentsline {subsection}{\numberline {3.1}Justification for Adopting a Bayesian Framework}{15}
 \contentsline {subsection}{\numberline {3.2}Bayesian Pharmacokinetic Models}{15}
-\contentsline {subsection}{\numberline {3.3}Adaptive Sampling}{16}
-\contentsline {subsection}{\numberline {3.4}Adaptive Control}{16}
-\contentsline {section}{\textbf {References}}{17}
+\contentsline {subsubsection}{Model 1}{16}
+\contentsline {subsubsection}{Model 2}{17}
+\contentsline {subsubsection}{Model 3}{18}
+\contentsline {subsubsection}{Other Model Expansions}{19}
+\contentsline {subsection}{\numberline {3.3}Adaptive Sampling}{20}
+\contentsline {subsection}{\numberline {3.4}Adaptive Control}{20}
+\contentsline {section}{\textbf {References}}{21}

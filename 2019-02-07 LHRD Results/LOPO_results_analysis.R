@@ -49,4 +49,4 @@ readRDS('LOPO Data/condition_on_first.RDS') %>%
   geom_line()+
   facet_wrap(~patients, scale = 'free_y')+
   labs(title = 'condition on first')
-s  
+
